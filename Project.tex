@@ -67,8 +67,34 @@ Blockchain, Optimization, Queueing
 
 \section{Introduction}\label{Intro}
 
-TODO: Redo this later
+The blockchain, a distributed ledger utilizing records linked together via cryptographic hashes, has within 
+the last decade captivated the industry. Having been utilized in the development of a decentralized economic 
+transfer scheme with the adoption of Bitcoin, the original Proof-of-Work concept had established a means of
+validating incoming transactions through a distributed network of participants. This led to the development 
+of other crypto-currency applications, most notably Ethereum. These solutions implemented methods with a
+focus on accuracy and redundancy of the various transactions with minimal effort given to reduce individual
+transactional waiting time and increase efficiency of processing transactions.
 
+This approach remains true for Bitcoin; however, Ethereum changed this consensus mechanism in 2022 with 
+the update to Proof-of-Stake. This changed the blockchain to be more efficient in reducing complexity in the
+work computations while decreasing the barrier to entry hence providing reduced centralized risk with the 
+potential of more nodes securing the network. Where under the Proof-of-Work, the timing of blocks was 
+determined by the mining difficulty, the new approach, Proof-of-Stake, the timing is fixed. Time in the 
+Proof-Of-Stake Ethereum is divided into slots of 12 seconds and epochs of 32 slots.
+
+While the Proof-Of-Stake greatly improved the efficiency of transactions, there remained room for 
+improvements in the completion of transactions. In this paper, we propose an algorithm to 
+decrease waiting time while maintaining a high level of throughput. To begin the optimization process, we
+must first choose a performance model that analytically describes the relationship between the number 
+of transactions, the fixed time for those transactions to be processed, and the total number of transactions
+that are processed (throughput). Once a representative performance model has been chosen, an optimal
+level of block size can be selected that balances out the throughput. 
+
+Our paper is organized as follows. In section two we conduct a brief literature review and then focus on the
+performance model that will underly our own work. Section three is dedicated to the methodology we used to
+optimize the block size with details of our approach theorized via mathematical models. Section four, we 
+discuss the results recorded from our early attempts at simulating our proposed model. Then we conclude in
+section five with remarks and discuss potential future areas to continue expanding upon the model. 
 \section{Related Work}\label{related}
 
 TODO: Redo this later
