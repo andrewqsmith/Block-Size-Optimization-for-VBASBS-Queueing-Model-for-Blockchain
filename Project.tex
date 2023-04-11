@@ -57,7 +57,15 @@ npark@cs.okstate.edu}
 
 \begin{abstract}
 
-TODO: Redo this later
+Our main goal with this work is to establish a theoretical model that can simulate
+more accurately how blockchain transactions are grouped, validated, processed,
+and purged from a network based on a proof-of-stake consensus algorithm. With 
+the switch from proof-of-work consensus algorithm to the newer proof-of-stake with 
+cryptocurrencies, most notably Ethereum, there is a need to update the theoretical 
+models that are used to define efficiency metrics. Further we took it upon ourselves 
+to move beyond that and quantify the optimal time window to decrease waiting time
+for the average owner of each transaction, while not significantly deteriorating throughput
+for the network as a whole.
 
 \end{abstract}
 
@@ -67,111 +75,89 @@ Blockchain, Optimization, Queueing
 
 \section{Introduction}\label{Intro}
 
-The blockchain, a distributed ledger utilizing records linked together via cryptographic hashes, has within 
-the last decade captivated the industry. Having been utilized in the development of a decentralized economic 
-transfer scheme with the adoption of Bitcoin, the original Proof-of-Work concept had established a means of
-validating incoming transactions through a distributed network of participants. This led to the development 
-of other crypto-currency applications, most notably Ethereum. These solutions implemented methods with a
-focus on accuracy and redundancy of the various transactions with minimal effort given to reduce individual
-transactional waiting time and increase efficiency of processing transactions.
+The blockchain, a distributed ledger utilizing records linked together via cryptographic 
+hashes, has within the last decade captivated the industry. Having been utilized in the 
+development of a decentralized economic transfer scheme with the adoption of 
+Bitcoin\cite{2008_Bitcoin_Nakamoto}, the original proof-of-work concept had established 
+a means of validating incoming transactions through a distributed network of participants. 
+This led to the development of other crypto-currency applications, most notably Ethereum. 
+These solutions implemented methods with a focus on accuracy and redundancy of the 
+various transactions with minimal effort given to reduce individual transactional waiting 
+time and increase efficiency of processing transactions.
 
-This approach remains true for Bitcoin; however, Ethereum changed this consensus mechanism in 2022 with 
-the update to Proof-of-Stake. This changed the blockchain to be more efficient in reducing complexity in the
-work computations while decreasing the barrier to entry hence providing reduced centralized risk with the 
-potential of more nodes securing the network. Where under the Proof-of-Work, the timing of blocks was 
-determined by the mining difficulty, the new approach, Proof-of-Stake, the timing is fixed. Time in the 
-Proof-Of-Stake Ethereum is divided into slots of 12 seconds and epochs of 32 slots.
+This approach remains true for Bitcoin; however, Ethereum changed this consensus 
+mechanism in 2022 with the update to proof-of-stake\cite{2022_Ethereum_PoS}. This 
+changed the blockchain to be more efficient in reducing complexity in the work 
+computations while decreasing the barrier to entry hence providing reduced centralized 
+risk with the potential of more nodes securing the network. Where under the proof-of-work
+consensus algorithm, the timing of blocks was determined by the mining difficulty, the 
+new approach, proof-of-stake, the timing is fixed. Time in the Ethereum proof-of-stake 
+consensus algorithm is divided into slots of 12 seconds and epochs of 32 slots.
 
-While the Proof-Of-Stake greatly improved the efficiency of transactions, there remained room for 
-improvements in the completion of transactions. In this paper, we propose an algorithm to 
-decrease waiting time while maintaining a high level of throughput. To begin the optimization process, we
-must first choose a performance model that analytically describes the relationship between the number 
-of transactions, the fixed time for those transactions to be processed, and the total number of transactions
-that are processed (throughput). Once a representative performance model has been chosen, an optimal
-level of block size can be selected that balances out the throughput. 
+While the proof-of-stake greatly improved the efficiency of transactions, there remains 
+room for improvements in the validation of transactions. In this paper, we propose an 
+algorithm to decrease waiting time while maintaining a high level of throughput. To begin 
+the optimization process, we must first choose a performance model that analytically 
+describes the relationship between the number of transactions, the fixed time for those 
+transactions to be processed, and the total number of transactions that are processed 
+(throughput). Once a representative performance model has been chosen, an optimal
+time window can be selected that balances out the throughput. 
 
-Our paper is organized as follows. In section two we conduct a brief literature review and then focus on the
-performance model that will underly our own work. Section three is dedicated to the methodology we used to
-optimize the block size with details of our approach theorized via mathematical models. Section four, we 
-discuss the results recorded from our early attempts at simulating our proposed model. Then we conclude in
-section five with remarks and discuss potential future areas to continue expanding upon the model. 
+Our paper is organized as follows. In section two we conduct a brief literature review and 
+then focus on the performance model that will underly our own work. Section three is 
+dedicated to the methodology we used to optimize the block size with details of our 
+approach theorized via mathematical models. Section four, we discuss the results recorded 
+from our early attempts at simulating our proposed model. Then we conclude in section five 
+with remarks and discuss potential future areas to continue expanding upon the model. 
+
 \section{Related Work}\label{related}
 
-TODO: Redo this later
+One of the main detriments of the concept of cryptocurrencies has been the slow transaction
+rates with proof-of-work consensus algorithm validation of transactions. The main focus to rectify 
+this problem while maintaining the original consensus algorithm can be seen in previous work such 
+as Fu\cite{2020_IEEEToVT_Fu}. This work states that when considering blockchain optimization, 
+the throughput, or number of transactions processed by a blockchain system in a given amount of 
+time, are key indicators of its performance. Mechkaroska\cite{2018_TELFOR_Mechkaroska} explores
+some of the methods tried up to that point. They include increasing the block size to increase the 
+number of transactions being processed, which is increasing throughput, and a technique called 
+"sharding" that is similar to parallel processing of transactions. This showed up in an alt-coin named 
+Zilliqa\cite{2017_Zilliqa_Zilliqa} which is mentioned in the paper. While sharding is on the docket of 
+potential changes to the Ethereum network, it has not been given the green light yet, and might not
+be necessary considering the changes made to the consensus algorithm, discussed later.
+
+The prevalence of articles that called for an increase to the block size to a na\"ive larger size shows 
+a lack of creativity to solve this issue of slow transaction validation as can be seen in Gobel, Thakkar, 
+and Mechkaroska\cite{2017_IEEE_Gobel, 2018_IEEE_Thakkar, 2018_TELFOR_Mechkaroska}. The 
+hard fork in Bitcoin to create Bitcoin Cash was chiefly designed to make this change, with the increase 
+in block size from 1MB on Bitcoin to 8MB on Bitcoin Cash. 
+
+Reading a paper about Energy Consumption with proof-of-work and beyond. Will tie that in here and justify
+moving to our new model based on proof-of-stake consensus algorithm.
 
 \section{Methedology}
-\subsection{Performance Model}\label{Model}
-Our algorithm will assume the performance model proposed by Seol, Kancharla, Ke, Kim and Park
+
+\subsection{Original Performance Model}\label{Model}
+Our algorithm will expand on the performance model proposed by Seol, Kancharla, Ke, Kim and Park
  - A Variable Bulk Arrival and Static Bulk Service Queuing Model for Blockchain\cite{2020_ACM_Seol}. 
- The arrival rate of the individual blockchain transactions is variable, but not unpredictable. 
+ In the initial model, the arrival rate of the individual blockchain transactions is variable, but not unpredictable. 
  The arrival rate is assumed to vary with the size of the incoming transaction and the rate is 
  denoted by the symbol $\lambda$.
 
 The variable $\mu$ is defined to be the processing time of a block to be posted and purged as noted 
-in Seol\cite{2020_ACM_Seol}, and is assumed to be fairly static as stated in the model. Since this is 
-assumed to be true, we will focus mainly on the performance measures of L$_Q$, W$_Q$ and $\gamma$ 
-as described below.
+in Seol\cite{2020_ACM_Seol}, and is assumed to be fairly static as stated in the model. 
+The variable n is defined to be the total number of slots in the block. P$_i$ denotes the states with 
+P$_n$ denoting the maximum state before the block is processed. 
 
-The variable n is defined to be the total number of slots in the block. This will be used to 
-define when a block (or batch of transactions) will be processed to minimize wait time while 
-maximizing throughput. 
-
-P$_i$ denotes the states with P$_n$ denoting the maximum state before the block is processed. Given 
-from the paper, the performance measure L$_Q$, which is the average number of customers in the 
-queue, can be written as:
+This model was based off of a proof-of-work concept as can primarily be seen with cryptocurrencies 
+such as Bitcoin, as stated in Sec.~\ref{Intro}. The crux of the argument for this balance set of equations 
+lies in Eq. 1 in Seol\cite{2020_ACM_Seol}, and also here, and thus will be the basis for our 
+new model. 
 
 \begin{equation}
-L_Q=\sum_{i=0}^niP_i\label{LQ_eq}
+P_n = \frac{\lambda}{\mu}\frac{n(n+1)}{2}P_0\label{om_1}
 \end{equation}
 
-Where the equation of the sum of i times state P at i is given as:
-
-\begin{equation}
-\sum_{i=0}^niP_i=\sum_{i=0}^ni(q_iP_0(\sum_{j=1}^ij(\sum_{k=1}^{i-1}(\prod_{l=1}^{k-1}q_l)k)+i))\label{sumiPi_eq}
-\end{equation}
-
-But as can be noted from the code in the appendix of the paper which is responsible for plotting 
-the associated graphs, this is equivalent to: 
-
-\begin{equation}
-\sum_{i=0}^ni(q_iP_0(\sum_{j=1}^ij(\sum_{k=1}^{i-1}(\prod_{l=1}^{k-1}q_l)k)+i))=nP_n\label{nPn_eq}
-\end{equation}
-
-Where the state P at time n is written as:
-
-\begin{equation}
-P_n=\frac{\lambda}{\mu}\frac{n(n+1)}{2}P_0\label{Pn_eq}
-\end{equation}
-
-Therefore, L$_Q$ can be written as:
-
-\begin{equation}
-L_Q=n\ast\frac{\lambda}{\mu}\frac{n(n+1)}{2}P_0\label{LQ2_eq}
-\end{equation}
-
-The performance measure W$_Q$, which is the average amount of time a customer is in the queue, 
-can be written as:
-
-\begin{equation}
-W_Q=\frac{L_Q}{\lambda}\label{WQ_eq}
-\end{equation}
-
-Both of these performance measures will vary somewhat constantly by n times the ratio of 
-$\frac{\lambda}{\mu}$ past some constant. And it can be noted that W$_Q$ is simply a scaled 
-measure of L$_Q$. However, the opposite end of this dynamic is the throughput, or how many 
-transactions will be processed in a given amount of time. This is given in the model paper as 
-$\gamma$, which is the throughput of the model, and is written as:
-
-\begin{equation}
-\gamma=\mu P_n=\mu\frac{\lambda}{\mu}\frac{n(n+1)}{2}P_0=\lambda\frac{n(n+1)}{2}P_0\label{gamma_eq}
-\end{equation}
-
-These performance metrics based off of the model put forth in Seol\cite{2020_ACM_Seol} will form the basis 
-of our algorithm. We will then try to minimize the waiting time while maximizing throughput based 
-on the expectation of $\lambda$ to adjust n to an optimum level. In doing so, we will compare our 
-non-synchronous model to a synchronous model with a set value of block size n. 
-
-\subsection{New Model}\label{new_model}
+\subsection{New Performance Model}\label{new_model}
 
 \begin{figure*}[htbp]
     \centerline{\includegraphics[width=\textwidth]{Figures/FlowDiagram.png}}
@@ -179,10 +165,10 @@ non-synchronous model to a synchronous model with a set value of block size n.
     \label{flow}
 \end{figure*}	
 
-Due to the ethereum network switching from Proof of Work to Proof of
-Stake validation, as discussed in Sec. ~\ref{related}, we have decided to update
+Due to the ethereum network switching from the proof-of-work to proof-of-stake 
+concept for their consensus algorithm, as discussed in Sec. ~\ref{related}, we have decided to update
 the base model in Seol\cite{2020_ACM_Seol} to reflect this new regime. This 
-new Proof of Stake methodology essentially flips the previous base model on its 
+new proof-of-stake methodology essentially flips the previous base model on its 
 head, where the time between blocks being pushed out to validators is set at twelve 
 seconds, and because of this, the block size (in terms of gas) can then fluctuate based 
 on the number of transactions that have arrived in the latest block window of time. 
