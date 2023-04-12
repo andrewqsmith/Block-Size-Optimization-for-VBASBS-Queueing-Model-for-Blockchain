@@ -15,43 +15,13 @@
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{Block Size Optimization for VBASBS Queueing Model for Blockchain}
+\title{Adapting VBASBS Queueing Model for Proof-of-Stake Consensus Algorithm}
 
-\author{\IEEEauthorblockN{Class Project}
-\IEEEauthorblockA{\textit{dept. of Computer Science} \\
-\textit{Oklahoma State University}\\
-Stillwater, OK, USA \\
-student@okstate.edu}}
-
-\iffalse
-\author{\IEEEauthorblockN{Nathan Crosby}
-\IEEEauthorblockA{\textit{dept. of Computer Science} \\
-\textit{Oklahoma State University}\\
-Stillwater, OK, USA \\
-ncrosby@okstate.edu}
-
-\and
-\IEEEauthorblockN{Andrew Smith}
-\IEEEauthorblockA{\textit{dept. of Computer Science} \\
-\textit{Oklahoma State University}\\
-Stillwater, OK, USA \\
-scu@okstate.edu}
-
-\and
-\IEEEauthorblockN{Christopher Crick}
-\IEEEauthorblockA{\textit{dept. of Computer Science} \\
-\textit{Oklahoma State University}\\
-Stillwater, OK, USA \\
-chriscrick@cs.okstate.edu}
-
-\and
-\IEEEauthorblockN{Nohpill Park}
-\IEEEauthorblockA{\textit{dept. of Computer Science} \\
-\textit{Oklahoma State University}\\
-Stillwater, OK, USA \\
-npark@cs.okstate.edu}
-}
-\fi
+\author{
+  \textbf{Kyle Kentner, Nathan Crosby, Andrew Smith, Sush Chittibabu, and Abdulla Karjikar}\\
+  Oklahoma State University - Stillwater, OK \\
+  kyle.kentner@okstate.edu, ncrosby@okstate.edu, scu@okstate.edu, \\
+  sushmitha.chittibabu@okstate.edu, abdulla.karjikar@okstate.edu}
 
 \maketitle
 
@@ -131,8 +101,13 @@ and Mechkaroska\cite{2017_IEEE_Gobel, 2018_IEEE_Thakkar, 2018_TELFOR_Mechkaroska
 hard fork in Bitcoin to create Bitcoin Cash was chiefly designed to make this change, with the increase 
 in block size from 1MB on Bitcoin to 8MB on Bitcoin Cash. 
 
-Reading a paper about Energy Consumption with proof-of-work and beyond. Will tie that in here and justify
-moving to our new model based on proof-of-stake consensus algorithm.
+Proof-of-work consensus algorithms take such a long time to calculate as a safety precaution against
+Sybil attacks. This methodology is no longer required for large market cap cryptocurrencies, and a 
+shift to a proof-of-stake consensus algorithm facilitates a precipitous drop in energy consumption
+as seen in Platt\cite{2021_IEEEQRSC_Platt}. The large pool of staked validators means that the 
+requirement for a validator can switch from access to raw compute power to capital. As stated in 
+Sec.~\ref{Intro} this change for Ethereum happened in 2022, and therefore a new theoretical model
+must be considered to take into account the eccentricities of this new consensus algorithm. 
 
 \section{Methedology}
 
@@ -177,10 +152,10 @@ The subsequently updated variables and assumptions are given below.
 
 $P_{0,0}$: The state at which no time has passed in the block window of time. 
 
-$P_{n,0}$: The state at all of the time has passed in the block window of time, and
+$P_{t,0}$: The state at all of the time has passed in the block window of time, and
 the block is ready to be sent to the validator community, with no slow transactions. 
 
-$P_{n-j,j}$: The state at all of the time has passed in the block window of time, and
+$P_{t-j,j}$: The state at all of the time has passed in the block window of time, and
 the block is ready to be sent to the validator community, with $j$ slow transactions. 
 
 $P_{i,0}$: The state at which $i$ fast transactions have arrived in the 
@@ -189,12 +164,22 @@ block window of time with 0 slow transactions.
 $P_{i,j}$: The state at which $i$ fast transactions have arrived in the 
 block window of time with $j$ slow transactions. 
 
-$\tau$: The number of minimum time increments that have occurred between the 
-start of the block window of time and the current moment. This can be thought of
-as $1/\lambda$ where $lambda$ is defined in Seol\cite{2020_ACM_Seol}.
+$\tau$: The minimum time increment that can pass between the 
+fast transaction arrivals. 
+
+$T$: The total time that will pass between each block creation and is initially static.
+
+$t$: The total number of fast transactions that can be seen in one block window of time.
+This is calculated as $\frac{T}{\tau}$, therefore if $T$ is fixed at twelve seconds and
+$\tau=\frac{1}{32}$ then $t=\frac{12}{\frac{1}{32}}=384$. 
 
 $\Omega$: The rate for the entire block to be posted and purged. This is assumed
 to balance the new form of equations as $\mu$ did in the original base model.
+
+$n$: The number of transactions in the block. This is now dependent on $j$ which is
+the number of slow transactions that has been seen in the current block window. Here, 
+$n=t - j$ or the total possible fast transactions, minus the slow transactions seen in the
+block window of time
 
 \subsubsection{$P_{0,0}$} $\\$
 
@@ -204,59 +189,60 @@ to balance the new form of equations as $\mu$ did in the original base model.
     \label{trans1}
 \end{figure}	
 
-Incoming from $P_{n,0}$, $P_{n-1,1}$, $P_{n-2,2}$, ... , $P_{2,n-2}$, $P_{1,n-1}$
+Incoming from $P_{t,0}$, $P_{t-1,1}$, $P_{t-2,2}$, ... , $P_{2,t-2}$, $P_{1,t-1}$
 
-Outgoing to $P_{1,0}$, $P_{1,1}$, $P_{1,2}$, ... , $P_{1,n-2}$, $P_{1,n-1}$
+Outgoing to $P_{1,0}$, $P_{1,1}$, $P_{1,2}$, ... , $P_{1,t-2}$, $P_{1,t-1}$
 
 \begin{multline}
-\Omega(P_{n,0} + P_{n-1,1} + P_{n-2,2} + ... + P_{2,n-2} + P_{1,n-1})\\
-= \tau(1 + 2 + 3 + ... + n-1 + n)P_{0,0}\label{nm_1}
+\Omega(P_{t,0} + P_{t-1,1} + P_{t-2,2} + ... + P_{2,t-2} + P_{1,t-1})\\
+= \tau(1 + 2 + 3 + ... + t-1 + t)P_{0,0}\label{nm_1}
 \end{multline}
 
-Here we have the summation from $1$ to $n-1$ which can be rewritten as 
-$\frac{n(n+1)}{2}$ and the other summation is all of the possible ending states
+Here we have the summation from $1$ to $t$ which can be rewritten as 
+$\frac{t(t+1)}{2}$ and the other summation is all of the possible ending states
 before we return to $P_{0,0}$. This can then be rewritten in Eq. ~\ref{nm_2}.
 
 \begin{equation}
-\Omega\sum_{j=0}^{n-1}{P_{n-j,j}} = \tau\frac{n(n+1)}{2}P_{0,0}\label{nm_2}
+\Omega\sum_{j=0}^{t-1}{P_{t-j,j}} = \tau\frac{t(t+1)}{2}P_{0,0}\label{nm_2}
 \end{equation}
 
 As can be seen here, our added parameter $j$ for the slow transactions has
-the effect of splitting the final state, $P_n$ from the base model in 
+the effect of splitting the final state, $P_t$ from the base model in 
 Seol\cite{2020_ACM_Seol} into various states from $0$ slow transactions up
-to $n-1$ slow transactions.
+to $t-1$ slow transactions.
 
 It is with this addition, along chopping a fixed amount of time to minimum time
 increments, $\tau$, that we can approximate the proof of stake workflow in 
-blockchain networks, like ethereum. 
+blockchain networks, like Ethereum. 
 
 \subsubsection{$P_{1,j}$} $\\$
 
 Incoming from $P_{0,0}$ only (with time $(j+1)\tau$)
 
-Outgoing to $P_{2,j}$, $P_{2,j+1}$, $P_{2,j+2}$, ... , $P_{2,n-3}$, $P_{2,n-2}$
+Outgoing to $P_{2,j}$, $P_{2,j+1}$, $P_{2,j+2}$, ... , $P_{2,t-3}$, $P_{2,t-2}$
 
 \begin{multline}
 \bcancel{\tau}(j+1)P_{0,0} = \\
-\bcancel{\tau}(1 + 2 + 3 + ... + (n-j-2) + (n-j-1))P_{1,j}\label{nm_3}
+\bcancel{\tau}(1 + 2 + 3 + ... + (t-j-2) + (t-j-1))P_{1,j}\label{nm_3}
 \end{multline}
 
 \begin{equation}
-P_{0,0} = \frac{(n-j-1)(n-j)}{2(j+1)}P_{1,j}\label{nm_4}
+P_{0,0} = \frac{(t-j-1)(t-j)}{2(j+1)}P_{1,j}\label{nm_4}
 \end{equation}
 
 \subsubsection{Combining Eq. \ref{nm_2} and Eq. \ref{nm_4}}
 
 \begin{multline}
-\frac{\cancel{2}\Omega}{\tau (n(n+1))}(P_{n,0} + P_{n-1,1} + P_{n-2,2} + ... \\
-+ P_{2,n-2} + P_{1,n-1}) = \frac{(n-j-1)(t-j)}{\cancel{2}(j+1)}P_{1,j}\label{nm_5}
+\frac{\cancel{2}\Omega}{\tau (t(t+1))}(P_{t,0} + P_{t-1,1} + P_{t-2,2} + ... \\
++ P_{2,t-2} + P_{1,t-1}) = \frac{(t-j-1)(t-j)}{\cancel{2}(j+1)}P_{1,j}\label{nm_5}
 \end{multline}
 
 \begin{multline}
-P_{1,j} = \frac{(j+1)\Omega}{\tau(n(n+1))((n-j-1)(n-j))}\\
-(P_{n,0} + P_{n-1,1} + ... + P_{1,n-1})\label{nm_6}
+P_{1,j} = \frac{(j+1)\Omega}{\tau(t(t+1))((t-j-1)(t-j))}\\
+(P_{t,0} + P_{t-1,1} + ... + P_{1,t-1})\label{nm_6}
 \end{multline}
 
+******STOPPING HERE - A LOT OF THESE EQUATIONS MIGHT BE REPLACED TOMORROW - GOING TO BED*******
 \subsubsection{$P_{n-j,j}$} $\\$
 
 \begin{figure}[htbp]
