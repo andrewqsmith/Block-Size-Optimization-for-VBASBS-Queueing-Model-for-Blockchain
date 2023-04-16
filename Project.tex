@@ -30,9 +30,9 @@
 Our main goal with this work is to establish a theoretical model that can simulate
 more accurately how blockchain transactions are grouped, validated, processed,
 and purged from a network based on a proof-of-stake consensus algorithm. With 
-the switch from proof-of-work consensus algorithm to the newer proof-of-stake with 
+the switch from the proof-of-work consensus algorithm to the newer proof-of-stake with 
 cryptocurrencies, most notably Ethereum, there is a need to update the theoretical 
-models that are used to define efficiency metrics. Further we took it upon ourselves 
+models that are used to define efficiency metrics. Further, we took it upon ourselves 
 to move beyond that and quantify the optimal time window to decrease waiting time
 for the average owner of each transaction, while not significantly deteriorating throughput
 for the network as a whole.
@@ -51,9 +51,9 @@ development of a decentralized economic transfer scheme with the adoption of
 Bitcoin\cite{2008_Bitcoin_Nakamoto}, the original proof-of-work concept had established 
 a means of validating incoming transactions through a distributed network of participants. 
 This led to the development of other crypto-currency applications, most notably Ethereum. 
-These solutions implemented methods with a focus on accuracy and redundancy of the 
+These solutions implemented methods with a focus on the accuracy and redundancy of the 
 various transactions with minimal effort given to reduce individual transactional waiting 
-time and increase efficiency of processing transactions.
+time and increase the efficiency of processing transactions.
 
 This approach remains true for Bitcoin; however, Ethereum changed this consensus 
 mechanism in 2022 with the update to proof-of-stake\cite{2022_Ethereum_PoS}. This 
@@ -76,7 +76,7 @@ time window can be selected that balances out the throughput.
 Our paper is organized as follows. In section two we conduct a brief literature review and 
 then focus on the performance model that will underly our own work. Section three is 
 dedicated to the methodology we used to optimize the block size with details of our 
-approach theorized via mathematical models. Section four, we discuss the results recorded 
+approach theorized via mathematical models. In section four, we discuss the results recorded 
 from our early attempts at simulating our proposed model. Then we conclude in section five 
 with remarks and discuss potential future areas to continue expanding upon the model. 
 
@@ -109,7 +109,7 @@ requirement for a validator can switch from access to raw compute power to capit
 Sec.~\ref{Intro} this change for Ethereum happened in 2022, and therefore a new theoretical model
 must be considered to take into account the eccentricities of this new consensus algorithm. 
 
-\section{Methedology}
+\section{Methodology}
 
 \subsection{Original Performance Model}\label{Model}
 Our algorithm will expand on the performance model proposed by Seol, Kancharla, Ke, Kim and Park
@@ -213,8 +213,8 @@ before we return to $P_{0,0}$. This can then be rewritten in Eq. ~\ref{nm_2}.
 \end{equation}
 
 As can be seen here, our new set of equations will be based on time instead of 
-a set number of transactions filling up a block. Our new added parameter $j$ for 
-the time slices without a transaction present is essentially a stall cycle waiting 
+a set number of transactions filling up a block. Our newly added parameter $j$ for 
+the time slices without a transaction present are essentially a stall cycle of waiting 
 for the next transaction to arrive and has the effect of splitting the final state, 
 $P_t$ from the base model in Seol\cite{2020_ACM_Seol} into various states 
 from $0$ empty time slices up to $t-1$ empty time slices. In the event of $t$ 
@@ -228,7 +228,7 @@ blockchain networks, like Ethereum.
 \subsubsection{$P_{i,0}$} $\\$
 
 From here we need to expand in two directions, namely $i$ and $j$. In the equations,
-i will denote the transactions that are incoming to the network, with a maximum of one
+we denote the transactions that are incoming to the network, with a maximum of one
 per time slice ($\tau$). The variable $j$ is then time slices without a transaction present.
 
 Incoming from $\tau P_{0,0}$
@@ -381,8 +381,8 @@ based on the expected rate of transaction arrivals, $\lambda$.
 
 Since we have now flipped the model on its head and time is fixed for the next
 block sent to validators and the block size already varies, we set out to see if
-we can loosen this constraint and set and optimal $T$ based on how fast 
-transactions are reaching the network. In our new model this is entirely based
+we can loosen this constraint and set an optimal $T$ based on how fast 
+transactions are reaching the network. In our new model, this is entirely based
 on $j$ since that variable represents time slices, $\tau$, with no transactions in them,
 or as we have also stated, each $j$ can be thought of as a stall cycle waiting for
 the next transaction to arrive.
@@ -426,19 +426,19 @@ It is therefore shown that, based on our new model for proof-of-stake networks, 
 time window is two times the number of stall cycles $j$ times the size of the time slice $\tau$.
 Since $\tau$ is known and a technical requirement of the network (theoretical max transactions
 per second), we only need to estimate $j$ for the coming period to then broadcast the next time 
-window $T$ when the previous block is sent out to be validated. For practical purposes the 
+window $T$ when the previous block is sent out to be validated. For practical purposes, the 
 ceiling of the solution to Eq.~\ref{opt_5} should be used to make sure that the time interval is always at least one
-second and there are discrete second intervals to choose from.
+second and that there are discrete second intervals to choose from.
 
 \iffalse
 \subsection{Closed Form Optimization}\label{closed_opt}
 
-In this semester, we can start by removing the iterative, numerical process described above with 
-a closed form solution to get the optimal n. The first thing then is that we have to look at the metric.
-In the iterative process we had the ratio of throughput over waiting time multiplied by a plug of $n lg(n)$. 
+This semester, we can start by removing the iterative, numerical process described above with 
+a closed-form solution to get the optimal n. The first thing then is that we have to look at the metric.
+In the iterative process, we had the ratio of throughput over waiting time multiplied by a plug of $n lg(n)$. 
 
-Let's then look at the equations of throughput and waiting time to see how the ratio looks when reducing it 
-down. W$_Q$ is given in eq. \ref{WQ_eq} as simply L$_Q$ divided by $\lambda$, so lets write that out and 
+Let's then look at the equations of throughput and waiting time to see how the ratio looks when reducing it. 
+W$_Q$ is given in eq. \ref{WQ_eq} as simply L$_Q$ divided by $\lambda$, so lets write that out and 
 show that $\lambda$ cancels out in that equation.
 
 \begin{equation}
@@ -451,9 +451,9 @@ Eq. \ref{gamma_eq} gives the equation for $\gamma$, so if we look at the equatio
 \frac{\gamma}{W_Q}=\frac{\lambda\cancel{\frac{n(n+1)}{2}}\cancel{P_0}}{\frac{n}{\mu}\cancel{\frac{n(n+1)}{2}}\cancel{P_0}}=\frac{\lambda}{\frac{n}{\mu}}=\frac{\mu}{n}\ast\lambda\label{ratio_eq}
 \end{equation}
 
-Now, this ratio when reduced shows that throughput over waiting time is a montonically increasing function, 
+Now, this ratio when reduced shows that throughput over waiting time is a monotonically increasing function, 
 with $\mu$ being fixed this means that $n$ is directly dependent on $\lambda$. This would not lead to an optimal 
-level of $n$, but rather as $\lambda$ became smaller (or quicker), $n$ would should become smaller. In practice, 
+level of $n$, but rather as $\lambda$ became smaller (or quicker), $n$ would become smaller. In practice, 
 batching was necessary to process transactions more efficiently, so there should be some penalty for having blocks 
 that are too small. The particular network or application would probably have a direct impact on this number, but
 for our case in an arbitrary blockchain, let's set this to $\frac{1}{3n^3}$. In this way, when $n$ gets very small, 
@@ -485,7 +485,7 @@ Then solving for $n$ we have eqs. \ref{cf_opt_n_1}, \ref{cf_opt_n_2}, \ref{cf_op
 n=\frac{1}{\sqrt{\mu\lambda}}\label{cf_opt_n_3}
 \end{equation}
 
-We now have the closed form solution that the optimal block size ($n$) is inversely related to
+We now have the closed-form solution that the optimal block size ($n$) is inversely related to
 the square root of the cost of creating a block ($\mu$) times the speed with which the transactions 
 are coming into the network($\lambda$). 
 
