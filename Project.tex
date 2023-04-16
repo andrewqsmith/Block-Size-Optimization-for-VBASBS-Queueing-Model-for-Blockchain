@@ -406,6 +406,30 @@ The waiting time for each customer in the queue is now simply $T$
   \frac{Throughput}{WaitingTime} = \frac{\frac{1}{\tau}-\frac{j}{T}}{T} = \frac{1}{\tau T}-\frac{j}{T^2}\label{opt_2}
 \end{equation}
 
+To find the optimal level of $T$ we then need to take the partial derivative with respect to $T$ that will
+be in terms of $j$ and then set it equal to zero and solve for $T$. For simplicity in Eq.~\ref{opt_3}, 
+let's call the ratio of Throughput to Waiting Time $M$, and we can calculate the derivative as follows.
+
+\begin{equation}
+  \frac{\delta M}{\delta T} = -\frac{1}{\tau T^2}+\frac{2j}{T^3}=0\label{opt_3}
+\end{equation}
+
+\begin{equation}
+  \frac{1}{\tau T^2}T^3=\frac{2j}{T^3}T^3\label{opt_4}
+\end{equation}
+
+\begin{equation}
+  T=2j\tau \label{opt_5}
+\end{equation}
+
+It is therefore shown that, based on our new model for proof-of-stake networks, the optimal 
+time window is two times the number of stall cycles $j$ times the size of the time slice $\tau$.
+Since $\tau$ is known and a technical requirement of the network (theoretical max transactions
+per second), we only need to estimate $j$ for the coming period to then broadcast the next time 
+window $T$ when the previous block is sent out to be validated. For practical purposes the 
+ceiling of the solution to Eq.~\ref{opt_5} should be used to make sure that the time interval is always at least one
+second and there are discrete second intervals to choose from.
+
 \iffalse
 \subsection{Closed Form Optimization}\label{closed_opt}
 
