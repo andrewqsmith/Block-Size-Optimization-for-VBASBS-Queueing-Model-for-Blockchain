@@ -18,12 +18,14 @@
 \title{Adapting VBASBS Queueing Model for Proof-of-Stake Consensus Algorithm}
 
 \author{
-  \textbf{Kyle Kentner, Nathan Crosby, Andrew Smith, Sush Chittibabu, and Abdulla Karjikar}\\
+  \textbf{Kyle Kentner$^*$, Nathan Crosby$^*$, Andrew Smith$^*$, Sush Chittibabu$^*$, and Abdulla Karjikar$^*$}\\
   Oklahoma State University - Stillwater, OK \\
   kyle.kentner@okstate.edu, ncrosby@okstate.edu, scu@okstate.edu, \\
   sushmitha.chittibabu@okstate.edu, abdulla.karjikar@okstate.edu}
 
 \maketitle
+
+\def\thefootnote{*}\footnotetext{These authors contributed equally to this work, but the group member Rohith Alamuri did not contribute to this paper.}\def\thefootnote{\arabic{footnote}}
 
 \begin{abstract}
 
@@ -101,6 +103,12 @@ and Mechkaroska\cite{2017_IEEE_Gobel, 2018_IEEE_Thakkar, 2018_TELFOR_Mechkaroska
 hard fork in Bitcoin to create Bitcoin Cash was chiefly designed to make this change, with the increase 
 in block size from 1MB on Bitcoin to 8MB on Bitcoin Cash. 
 
+\begin{figure*}[htbp]
+    \centerline{\includegraphics[width=\textwidth]{Figures/Flow}}
+    \caption{State transition diagram of new model.} 
+    \label{flow}
+\end{figure*}	
+
 Proof-of-work consensus algorithms take such a long time to calculate as a safety precaution against
 Sybil attacks. This methodology is no longer required for large market cap cryptocurrencies, and a 
 shift to a proof-of-stake consensus algorithm facilitates a precipitous drop in energy consumption
@@ -133,12 +141,6 @@ P_n = \frac{\lambda}{\mu}\frac{n(n+1)}{2}P_0\label{om_1}
 \end{equation}
 
 \subsection{New Performance Model}\label{new_model}
-
-\begin{figure*}[htbp]
-    \centerline{\includegraphics[width=\textwidth]{Figures/FlowDiagram.png}}
-    \caption{State transition diagram of new model.} 
-    \label{flow}
-\end{figure*}	
 
 Due to the Ethereum network switching from the proof-of-work to proof-of-stake 
 concept for their consensus algorithm, as discussed in Sec. ~\ref{related}, we have 
@@ -196,9 +198,9 @@ observation of either seeing a transaction or not, which equates to either incre
 one or $j$ by one. $\\$
 
 \begin{figure}[htbp]
-    \centerline{\includegraphics[width=\linewidth]{Figures/StateTransition2.jpg}}
+    \centerline{\includegraphics[width=\linewidth]{Figures/P_0,0}}
     \caption{State Transition Diagram of $P_{0,0}$} 
-    \label{trans1}
+    \label{P_0,0}
 \end{figure}	
 
 Incoming: $\Omega (P_{t,0}, P_{t-1,1}, ... , P_{1,t-1}, P_{0,t})$
@@ -237,6 +239,12 @@ will handle the intermediate time steps before we reach the end of the block win
 of time ($T$). At each time step, we only have two options, increment $i$ or increment
 $j$ based on seeing a transaction or not. Let's first examine the case of $P_{1,0}$ or 
 seeing a transaction in the first time slot. $\\$
+
+\begin{figure}[htbp]
+    \centerline{\includegraphics[width=\linewidth]{Figures/P_i,j}}
+    \caption{State Transition Diagram of $P_{i,j}$} 
+    \label{P_i,j}
+\end{figure}
 
 Incoming: $\tau P_{0,0}$
 
@@ -374,9 +382,9 @@ until we get to the end of the block time window ($T$). We must now define the f
 in our new model. 
 
 \begin{figure}[htbp]
-    \centerline{\includegraphics[width=\linewidth]{Figures/StateTransition3.jpg}}
+    \centerline{\includegraphics[width=\linewidth]{Figures/P_t-j,j}}
     \caption{State Transition Diagram of $P_{t-j,j}$} 
-    \label{trans3}
+    \label{P_t-j,j}
 \end{figure}
 
 Incoming: $\tau P_{t-j-1,j}$, $\tau P_{t-j,j-1}$
@@ -426,7 +434,7 @@ elapsed.
 \subsection{Optimization}\label{optimization}
 
 Optimization in the old base model pertained to maximizing throughput
-while minimizing waiting time by adjusting the size of the next bloc, $n$,
+while minimizing waiting time by adjusting the size of the next block, $n$,
 based on the expected rate of transaction arrivals, $\lambda$. 
 
 Since we have now flipped the model on its head and time is fixed for the next
