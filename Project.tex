@@ -140,30 +140,34 @@ P_n = \frac{\lambda}{\mu}\frac{n(n+1)}{2}P_0\label{om_1}
     \label{flow}
 \end{figure*}	
 
-Due to the ethereum network switching from the proof-of-work to proof-of-stake 
-concept for their consensus algorithm, as discussed in Sec. ~\ref{related}, we have decided to update
-the base model in Seol\cite{2020_ACM_Seol} to reflect this new regime. This 
-new proof-of-stake methodology essentially flips the previous base model on its 
-head, where the time between blocks being pushed out to validators is set at twelve 
-seconds, and because of this, the block size can then fluctuate based 
+Due to the Ethereum network switching from the proof-of-work to proof-of-stake 
+concept for their consensus algorithm, as discussed in Sec. ~\ref{related}, we have 
+decided to update the base model in Seol\cite{2020_ACM_Seol} to reflect this new 
+regime. This new proof-of-stake methodology essentially flips the previous base 
+model on its head, where the time between blocks being pushed out to validators is 
+set at a fixed interval, and because of this, the block size can then fluctuate based 
 on the number of transactions that have arrived in the latest block window of time. 
+To account for this we have discretized the block time window into single transaction
+slots based on the theoretical maximum number of transactions that can arrive on 
+the network per second. In each slot we can then either have a transaction arrive, 
+or not. 
 
 The subsequently updated variables and assumptions are given below. 
 
 $P_{0,0}$: The state at which no time has passed in the block window of time ($T$). 
 
 $P_{t,0}$: The state at all of the time has passed in the block window of time ($T$), and
-the block is ready to be sent to the validator community, with no empty time slices ($j$) so 
+the block is ready to be sent to the validator community, with no empty time slices, so 
 $n = t$. 
 
 $P_{t-j,j}$: The state where all of the time has passed in the block window of time ($T$), and
-the block is ready to be sent to the validator community, with $j$ empty time slices ($j$). 
+the block is ready to be sent to the validator community, with $j$ empty time slices. 
 
 $P_{i,0}$: The state at which $i$ transactions have arrived in the 
-block window of time with 0 empty time slices ($j$). 
+block window of time with 0 empty time slices. 
 
 $P_{i,j}$: The state at which $i$ transactions have arrived in the 
-block window of time with $j$ empty time slices ($j$). 
+block window of time with $j$ empty time slices. 
 
 $\tau$: The minimum time increment that can pass between the 
 transaction arrivals. If the theoretical maximum for a given application is 1,000 transactions 
@@ -180,14 +184,16 @@ to balance the new form of equations as $\mu$ did in the original base model.
 
 $n$: The number of transactions in the block. This is now dependent on $j$ which is
 the number of empty time slices that has been seen in the current block window. Here, 
-$n=t - j$ or the total possible transactions, minus the empty time slices ($j$) seen in the
+$n=t - j$ or the total possible transactions, minus the empty time slices seen in the
 block window of time
 
-\subsubsection{$P_{0,0}$} $\\$
+\subsubsection{$P_{0,0}$}
 
 The initial state must be set up based on the state transition diagram given in Fig.~\ref{flow}.
 Based on that diagram the incoming and outgoing transitions are given below which yields the 
-balanced equation in Eq.~\ref{nm_1}. $\\$
+balanced equation in Eq.~\ref{nm_1}. As can be seen, at each time step there is a binary 
+observation of either seeing a transaction or not, which equates to either incrementing $i$ by
+one or $j$ by one. $\\$
 
 \begin{figure}[htbp]
     \centerline{\includegraphics[width=\linewidth]{Figures/StateTransition2.jpg}}
@@ -195,148 +201,177 @@ balanced equation in Eq.~\ref{nm_1}. $\\$
     \label{trans1}
 \end{figure}	
 
-Incoming from $P_{t,0}$, $P_{t-1,1}$, $P_{t-2,2}$, ... , $P_{2,t-2}$, $P_{1,t-1}$
+Incoming: $\Omega (P_{t,0}, P_{t-1,1}, ... , P_{1,t-1}, P_{0,t})$
 
-Outgoing to $P_{1,0}$, $P_{1,1}$, $P_{1,2}$, ... , $P_{1,t-2}$, $P_{1,t-1}$
-
-\begin{multline}
-\Omega(P_{t,0} + P_{t-1,1} + P_{t-2,2} + ... + P_{2,t-2} + P_{1,t-1})\\
-= \tau(1 + 2 + 3 + ... + t-1 + t)P_{0,0}\label{nm_1}
-\end{multline}
-
-Here we have the summation from $1$ to $t$ which can be rewritten as 
-$\frac{t(t+1)}{2}$ and the other summation is all of the possible ending states
-before we return to $P_{0,0}$. This can then be rewritten in Eq. ~\ref{nm_2}.
+Outgoing: $2 \tau P_{0,0}$
 
 \begin{equation}
-\Omega\sum_{j=0}^{t-1}{P_{t-j,j}} = \tau\frac{t(t+1)}{2}P_{0,0}\label{nm_2}
+  \Omega(P_{t,0} + P_{t-1,1} +  ... + P_{1,t-1} + P_{0,t})= 2\tau P_{0,0}\label{nm_1}
+\end{equation}
+
+To simplify this equation to solve for $P_{0,0}$ we can sum the ending states and
+divide both sides by $2\tau$ to end up with Eq.~\ref{nm_2}.
+
+\begin{equation}
+  P_{0,0} = \frac{\Omega}{2\tau}\sum_{j=0}^{t}{P_{t-j,j}}\label{nm_2}
 \end{equation}
 
 As can be seen here, our new set of equations will be based on time instead of 
 a set number of transactions filling up a block. Our newly added parameter $j$ for 
-the time slices without a transaction present are essentially a stall cycle of waiting 
-for the next transaction to arrive and has the effect of splitting the final state, 
+the time slices without a transaction present are essentially stall cycles waiting 
+for the next transaction to arrive and have the effect of splitting the final state, 
 $P_t$ from the base model in Seol\cite{2020_ACM_Seol} into various states 
-from $0$ empty time slices up to $t-1$ empty time slices. In the event of $t$ 
-empty time slices there would be no transactions to validate and the model 
-would loop back to $P_{0,0}$. 
+from $0$ empty time slices up to $t$ empty time slices. In the event of $t$ 
+empty time slices there would be no transactions to validate, however it would 
+still need to be verified by the validator community that indeed no transactions 
+had arrived, so the empty block would still need to be sent out. 
 
 It is with this addition, along with chopping a fixed amount of time to minimum time
 increments, $\tau$, that we can approximate the proof of stake workflow in 
 blockchain networks, like Ethereum. 
 
-\subsubsection{$P_{i,0}$} $\\$
+\subsubsection{$P_{i,j}$} $\\$
 
-From here we need to expand in two directions, namely $i$ and $j$. In the equations,
-we denote the transactions that are incoming to the network, with a maximum of one
-per time slice ($\tau$). The variable $j$ is then time slices without a transaction present.
+Now that the initial state has been defined, we need to examine how the network
+will handle the intermediate time steps before we reach the end of the block window
+of time ($T$). At each time step, we only have two options, increment $i$ or increment
+$j$ based on seeing a transaction or not. Let's first examine the case of $P_{1,0}$ or 
+seeing a transaction in the first time slot. $\\$
 
-Incoming from $\tau P_{0,0}$
+Incoming: $\tau P_{0,0}$
 
-Outgoing to $\frac{(t-i-j)(t-i-j+1)}{2} P_{1,0}$
+Outgoing: $2 \tau P_{1,0}$
 
 \begin{equation}
   \bcancel{\tau}P_{0,0} = \\
-  \bcancel{\tau}\frac{(t-i-j)(t-i-j+1)}{2}P_{1,0}\label{nm_3}
+  2\bcancel{\tau}P_{1,0}\label{nm_3}
 \end{equation}
 
 \begin{equation}
-  P_{1,0} = \frac{2}{(t-1)t}P_{0,0}\label{nm_4}
+  P_{1,0} = \frac{1}{2}P_{0,0}\label{nm_4}
 \end{equation}
 
-Similarly, we can expand to $P_{2,0}$ from $P_{1,0}$ with Eqs.~\ref{nm_5} \&~\ref{nm_6}
+Similarly, we can expand from $P_{0,0}$ to $P_{0,1}$ with Eqs.~\ref{nm_5} \&~\ref{nm_6}
 
 \begin{equation}
-  \bcancel{\tau}P_{1,0} = \\
-  \bcancel{\tau}\frac{(t-i-j)(t-i-j+1)}{2}P_{2,0}\label{nm_5}
-\end{equation}
-
-\begin{equation}
-  P_{2,0} = \frac{2}{(t-i-j)(t-i-j+1)}P_{1,0}\label{nm_6}
-\end{equation}
-
-Then subbing in for $P_{1,0}$ from Eq.~\ref{nm_4}:
-
-\begin{equation}
-  P_{2,0} = \frac{2}{(t-2)(t-1)}\frac{2}{(t-1)t}P_{0,0}\label{nm_7}
-\end{equation}
-
-And similarly for $P_{3,0}$ we get Eq.~\ref{nm_8}:
-
-\begin{equation}
-  P_{3,0} = \frac{2}{(t-3)(t-2)}\frac{2}{(t-2)(t-1)}\frac{2}{(t-1)t}P_{0,0}\label{nm_8}
-\end{equation}
-
-And we can see the pattern emerge for the generalized $P_{i,0}$:
-
-\begin{equation}
-  P_{i,0} = \frac{2^i}{(t-i)t\prod_{k=1}^{i-1}{(t-i+k)^2}}P_{0,0}\label{nm_9}
-\end{equation}
-
-\subsubsection{$P_{i,j}$} $\\$
-
-Here, we are going to shift to adding stall cycles, or empty time slices to the set of 
-balanced equations derived from the state transition diagram in Fig.~\ref{flow}. This 
-involves increasing our variable j. We will show this by transitioning from from 
-$P_{1,0}$ to $P_{1,1}$ first and then extrapolate from there. Eq.~\ref{nm_4} gives us 
-the starting point of $P_{1,0}$, so then:
-
-\begin{figure}[htbp]
-    \centerline{\includegraphics[width=\linewidth]{Figures/StateTransition4.jpg}}
-    \caption{State Transition Diagram of $P_{i,j}$} 
-    \label{trans2}
-\end{figure}	
-
-Incoming from $\tau P_{1,0}$
-
-Outgoing to $\frac{(t-i-j)(t-i-j+1)}{2} P_{1,1}$
-
-\begin{equation}
-  \bcancel{\tau}P_{1,0} = \\
-  \bcancel{\tau}\frac{(t-i-j)(t-i-j+1)}{2}P_{1,1}\label{nm_10}
+  \bcancel{\tau}P_{0,0} = \\
+  2\bcancel{\tau}P_{0,1}\label{nm_5}
 \end{equation}
 
 \begin{equation}
-  P_{1,1} = \frac{2}{(t-2)(t-1)}P_{1,0}\label{nm_11}
+  P_{0,1} = \frac{1}{2}P_{0,0}\label{nm_6}
 \end{equation}
 
-We can now substitute Eq.~\ref{nm_4} back into Eq.~\ref{nm_11}
-and after grouping like terms we have:
+This makes intuitive since, given the binary nature of the observation that after 
+one time step and the random nature of $j$ that there is a 50\% chance of landing
+in either state $P_{1,0}$ or $P_{0,1}$. We can now move on to the next layer, which 
+would then be the states $P_{2,0}$, $P_{0,2}$, or $P_{1,1}$. Lets first examine the 
+edge cases. $\\$
+
+Incoming: $\tau P_{1,0}$
+
+Outgoing: $2 \tau P_{2,0}$
 
 \begin{equation}
-  P_{1,1} = \frac{2^2}{(t-2)(t-1)^2n}P_{0,0}\label{nm_12}
-\end{equation}
-
-Extrapolating on this point we can now derive and equation for 
-$P_{1, 2}$ as: 
-
-\begin{equation}
-  \bcancel{\tau}P_{1,1} = \\
-  \bcancel{\tau}\frac{(t-i-j)(t-i-j+1)}{2}P_{1,2}\label{nm_13}
-\end{equation}
-
-\begin{equation}
-  P_{1,2} = \frac{2}{(t-2)(t-1)}P_{1,1}\label{nm_14}
+  \bcancel{\tau} P_{1,0} = 2\bcancel{\tau} P_{2,0}\label{nm_7}
 \end{equation}
 
 \begin{equation}
-  P_{1,2} = \frac{2^3}{(t-3)(t-2)^2(t-1)^2n}P_{0,0}\label{nm_15}
+  P_{2,0} = \frac{1}{2}P_{1,0}\label{nm_7}
 \end{equation}
 
-We can now generalize this for any $P_{i,j}$ as:
+And now subbing back into $P_{1,0}$ the result from Eq.~\ref{nm_4} we get:
 
 \begin{equation}
-  P_{i,j} = \frac{2^{(i+j)}}{(t-i-j)t\prod_{k=1}^{(i+j)-1}{(t-i-j+k)^2}}P_{0,0}\label{nm_16}
+  P_{2,0} = \frac{1}{2}(\frac{1}{2}P_{0,0})=\frac{1}{4}P_{0,0}\label{nm_8}
+\end{equation}
+
+And similarly for $P_{0,2}$ we get the same result. Now, lets move on to the more
+interesting result from $P_{1,1}$. $\\$
+
+Incoming: $\tau P_{1,0}$, $\tau P_{0,1}$
+
+Outgoing: $2\tau P_{1,1}$
+
+\begin{equation}
+  \tau P_{1,0} + \tau P_{0,1} = 2\tau P_{1,1} \label{nm_9}
+\end{equation}
+
+\begin{equation}
+  \bcancel{\tau} (P_{1,0} + P_{0,1}) = 2\bcancel{\tau} P_{1,1} \label{nm_10}
+\end{equation}
+
+\begin{equation}
+  P_{1,1} = \frac{1}{2}(P_{1,0} + P_{0,1})\label{nm_11}
+\end{equation}
+
+Subbing back in the results for $P_{1,0}$ and $P_{0,1}$ we have:
+
+\begin{equation}
+  P_{1,1} = \frac{1}{2}(\frac{1}{2}P_{0,0} + \frac{1}{2}P_{0,0})=\frac{1}{2}P_{0,0}\label{nm_12}
+\end{equation}
+
+So, now we have the first two layers and the pattern is starting to emerge, but
+let us look at one last layer. The edge cases in the third layer follow the same pattern
+as layer two and $P_{3,0}$, and symmetrically $P_{0,3}$, are simply given in Eq.~\ref{nm_13}.
+
+\begin{equation}
+  P_{3,0} = P_{0,3} = \frac{1}{8}P_{0,0}\label{nm_13}
+\end{equation}
+
+The interesting states here are $P_{2,1}$ and $P_{1, 2}$ derived as follows 
+for $P_{2,1}$ and extrapolated to $P_{1,2}$:
+
+\begin{equation}
+  \tau P_{1,1} + \tau P_{2,0} = 2\tau P_{2,1} \label{nm_14}
+\end{equation}
+
+\begin{equation}
+  \bcancel{\tau} (P_{1,1} + P_{2,0}) = 2\bcancel{\tau} P_{2,1} \label{nm_15}
+\end{equation}
+
+\begin{equation}
+  P_{2,1} = \frac{1}{2}(P_{1,1} + P_{2,0})\label{nm_16}
+\end{equation}
+
+Subbing back in for $P_{1,1}$ and $P_{2,0}$ we have:
+
+\begin{equation}
+  P_{2,1} = \frac{1}{2}(\frac{1}{2}P_{0,0} + \frac{1}{4}P_{0,0}) = \frac{3}{8}P_{0,0}\label{nm_17}
+\end{equation}
+
+And the result from Eq.~\ref{nm_17} is the same for $P_{1,2}$. We can now generalize
+for the generic state of $P_{i,j}$. We notice that each layer multiplies the denominator in 
+the previous layer by 2, and if we give the denominator the name $b$ then it can be defined
+as in Eq.~\ref{nm_18} given that the layer is defined by $i+j$. 
+
+\begin{equation}
+  b_{i,j} = 2^{(i+j)}\label{nm_18}
+\end{equation}
+
+The numerators will depend on the numerators of the two states that transition to that
+state, as long as they are not an edge state (with $i$ or $j$ equal to 0). 
+
+\begin{equation}
+  a_{i,j} =
+    \begin{cases}
+      1,                            & i = 0 \text{ }|\text{ } j = 0 \\
+      a_{i-1,j} + a_{i,j-1},  & \text{otherwise}
+    \end{cases}
+    \label{nm_19}
+\end{equation}
+
+Now, the generalized formula for $P_{i,j}$ can be given in Eq.~\ref{nm_20}:
+
+\begin{equation}
+  P_{i,j} = \frac{a_{i,j}}{b_{i,j}}P_{0,0}, \text{  for } j < t \text{ \& } i < t-j\label{nm_20}
 \end{equation}
 
 \subsubsection{$P_{t-j,j}$} $\\$
 
-We have defined the initial state, $P_{0,0}$, with the summation of all of the
-final states, $P_{t-j,j}$, but to fully describe the state transition diagram in 
-Fig.~\ref{flow} we must define the individual $P_{t-j,j}$. The impetus for this 
-set of equations can be seen in Fig.~\ref{trans3}. We will start with the case 
-that all time slices, $\tau$, have a transaction present, and therefore $j$ is 
-zero. 
+We have now defined the initial state, $P_{0,0}$ and the intermediate states, $P_{i,j}$ up 
+until we get to the end of the block time window ($T$). We must now define the final states
+in our new model. 
 
 \begin{figure}[htbp]
     \centerline{\includegraphics[width=\linewidth]{Figures/StateTransition3.jpg}}
@@ -344,24 +379,39 @@ zero.
     \label{trans3}
 \end{figure}
 
-Incoming from $\tau P_{t-1,0}$ 
+Incoming: $\tau P_{t-j-1,j}$, $\tau P_{t-j,j-1}$
 
-Outgoing to $\Omega P_{t,0}$
+Outgoing: $\Omega P_{t-j,j}$
 
 \begin{equation}
-  \tau P_{t-1,0} = \Omega P_{t,0}\label{nm_17}
+  \tau P_{t-j-1,j} + \tau P_{t-j,j-1} = \Omega P_{t-j,j}\label{nm_21}
 \end{equation}
 
-Substituting in for $P_{t-1,0}$ and solving for $P_{t,0}$ we then have:
+\begin{equation}
+  P_{t-j,j} = \frac{\tau}{\Omega} (P_{t-j-1,j} + P_{t-j,j-1})\label{nm_21}
+\end{equation}
+
+There are now two cases to consider, the first is when $0<j<t$ and the
+other is when $j$ is one of the edge cases. The main caveat is that an 
+edge case will have a numerator equal to $1$, where the regular rules
+from Eq.~\ref{nm_19} apply to the non-edge cases. Another note, since 
+all final states transition to the initial state, $P_{0,0}$, then we do not 
+double the numerator again and $b_{t-j,j} = 2^{t-1}$ for all cases. Given 
+that, our equations for each final state $P_{t-j,j}$ are as stated in Eq.~\ref{nm_22}.
 
 \begin{equation}
-  P_{t,0}  = \frac{\tau}{\Omega} \frac{2^{t-1}}{(t-1)\prod_{k=1}^{t-2}{(k+1)^2}}P_{0,0}\label{nm_18}
+  P_{t-j,j} =
+    \begin{cases}
+      \frac{a_{t-j-1,j} + a_{t-j,j-1}}{2^{t-1}}P_{0,0},                            & 0 < j < t \\
+      \frac{1}{2^{t-1}}P_{0,0},  & j = 0 \text{ } |\text{ } j = t
+    \end{cases}
+    \label{nm_22}
 \end{equation}
 
 \subsubsection{Constraint: Markovian Queueing Assumption}
 
 \begin{equation}
-P_{0,0} + \sum_{i=1}^{t}{\sum_{j=0}^{t-i}{P_{i,j}}} = 1.0\label{nm_20}
+  \sum_{i=0}^{t-j}{\sum_{j=0}^{t}{P_{i,j}}} = 1.0\label{nm_23}
 \end{equation}
 
 \subsubsection{Remarks} $\\$
@@ -430,85 +480,23 @@ window $T$ when the previous block is sent out to be validated. For practical pu
 ceiling of the solution to Eq.~\ref{opt_5} should be used to make sure that the time interval is always at least one
 second and that there are discrete second intervals to choose from.
 
-\iffalse
-\subsection{Closed Form Optimization}\label{closed_opt}
-
-This semester, we can start by removing the iterative, numerical process described above with 
-a closed-form solution to get the optimal n. The first thing then is that we have to look at the metric.
-In the iterative process, we had the ratio of throughput over waiting time multiplied by a plug of $n lg(n)$. 
-
-Let's then look at the equations of throughput and waiting time to see how the ratio looks when reducing it. 
-W$_Q$ is given in eq. \ref{WQ_eq} as simply L$_Q$ divided by $\lambda$, so lets write that out and 
-show that $\lambda$ cancels out in that equation.
-
-\begin{equation}
-W_Q=\frac{n\ast\frac{\lambda}{\mu}\frac{n(n+1)}{2}P_0}{\lambda}=n\ast\frac{\cancel{\lambda}}{\mu}\frac{n(n+1)}{2}P_0\ast\frac{1}{\cancel{\lambda}}\label{WQ_reduced}
-\end{equation}
-
-Eq. \ref{gamma_eq} gives the equation for $\gamma$, so if we look at the equation for the ratio of throughput over waiting time we get eq. \ref{ratio_eq}. 
-
-\begin{equation}
-\frac{\gamma}{W_Q}=\frac{\lambda\cancel{\frac{n(n+1)}{2}}\cancel{P_0}}{\frac{n}{\mu}\cancel{\frac{n(n+1)}{2}}\cancel{P_0}}=\frac{\lambda}{\frac{n}{\mu}}=\frac{\mu}{n}\ast\lambda\label{ratio_eq}
-\end{equation}
-
-Now, this ratio when reduced shows that throughput over waiting time is a monotonically increasing function, 
-with $\mu$ being fixed this means that $n$ is directly dependent on $\lambda$. This would not lead to an optimal 
-level of $n$, but rather as $\lambda$ became smaller (or quicker), $n$ would become smaller. In practice, 
-batching was necessary to process transactions more efficiently, so there should be some penalty for having blocks 
-that are too small. The particular network or application would probably have a direct impact on this number, but
-for our case in an arbitrary blockchain, let's set this to $\frac{1}{3n^3}$. In this way, when $n$ gets very small, 
-the penalty gets larger. A maximum can also be determined based on network processing speeds as a cap to 
-$n$. So, now we have eq. \ref{metric_eq} which we can denote $M$ for metric.
-
-\begin{equation}
-M=\frac{\gamma}{W_Q}-penalty=\frac{\mu\lambda}{n}-\frac{1}{3n^3}\label{metric_eq}
-\end{equation}
-
-To find the maximum/minimum of this equation we need to take the first derivative with respect to $n$ 
-and set it equal to zero. 
-
-\begin{equation}
-\frac{\delta M}{\delta n}=-\frac{\mu\lambda}{n^2}+\frac{1}{n^4}=0\label{metric_deriv}
-\end{equation}
-
-Then solving for $n$ we have eqs. \ref{cf_opt_n_1}, \ref{cf_opt_n_2}, \ref{cf_opt_n_3}.
-
-\begin{equation}
--\frac{\mu\lambda}{n^2}=-\frac{1}{n^4}\label{cf_opt_n_1}
-\end{equation}
-
-\begin{equation}
-\frac{n^4}{n^2}=\frac{1}{\mu\lambda}\label{cf_opt_n_2}
-\end{equation}
-
-\begin{equation}
-n=\frac{1}{\sqrt{\mu\lambda}}\label{cf_opt_n_3}
-\end{equation}
-
-We now have the closed-form solution that the optimal block size ($n$) is inversely related to
-the square root of the cost of creating a block ($\mu$) times the speed with which the transactions 
-are coming into the network($\lambda$). 
-
-Using this same equation, $\lambda$ can also be projected based on the cyclical nature of how transaction
-speeds progress throughout the day and the optimal $n$ can be calculated before each block is created to 
-predetermine the next block size to be created. 
-\fi
-
 \section{Results}
 
 TODO: Redo this later
 
-\section{Conclusion and discussion}
+\section{Conclusion and Discussion}
 
-The conclusion this team has derived through the suggested mathematical models is that the blockchain transactions,
-in regards to proof-of stack, can be optimized in the model described in Seol\cite{2020_ACM_Seol}. This is achievable, 
-as suggested in Sec. III, through time variable transactions into the queuing model. In this proposed solution, a
-significant reduction is noticeable in transaction waiting time in the queue while maintaining acceptable levels of
-throughput.
+The conclusion this team has derived through the suggested mathematical models is that 
+the blockchain transactions, in regards to proof-of stack, can be optimized in the model 
+described in Seol\cite{2020_ACM_Seol}. This is achievable, as suggested in Sec. III, through 
+time variable transactions into the queuing model. In this proposed solution, a significant 
+reduction is noticeable in transaction waiting time in the queue while maintaining acceptable 
+levels of throughput.
 
-Additional research recommended would be to expand this methodology into a future Ethereum branch where sharding
-has been implemented. We believe that this approach, along with asynchronous composability inherited from the necessity
-for the splltting of the Ethereum infrastructure, would facilitate optimization on the various transactional validation 
+Additional research recommended would be to expand this methodology into a future 
+Ethereum branch where sharding has been implemented. We believe that this approach, 
+along with asynchronous composability inherited from the necessity for the splltting of the 
+Ethereum infrastructure, would facilitate optimization on the various transactional validation 
 required on such a scale.
 
 \bibliographystyle{IEEEtrans}
