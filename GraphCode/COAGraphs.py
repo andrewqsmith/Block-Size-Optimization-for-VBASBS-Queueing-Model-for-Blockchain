@@ -1,5 +1,4 @@
 # This is a sample Python script.
-
 # Press ⌃R to execute it or replace it with your code.
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 import numpy as np
@@ -9,9 +8,9 @@ if __name__ == '__main__':
     
     tau = 1000
     omega = 1000
-    T = 12
+    T = 5
     transactions = T * tau
-
+    P00 = 0
 
     A = np.zeros((transactions, transactions), dtype=np.longdouble)
     B = np.zeros((transactions, transactions), dtype=np.longdouble)
@@ -21,7 +20,6 @@ if __name__ == '__main__':
     AvgFilledSlots = np.zeros((transactions, transactions), dtype=np.longdouble)
 
 
-    P00 = 0
 
     for i in range(transactions - 1):
         for j in range(transactions - i - 1):
@@ -62,7 +60,6 @@ if __name__ == '__main__':
     print(total_P)
     total_throughput = 0
     for i in range(transactions):
-        print(i)
         Throughput[i][transactions - i - 1] = (((T*tau) - (transactions - i - 1)) / omega) * P[i][transactions - i - 1]
         total_throughput += Throughput[i][transactions - i - 1]
     print("-----Throughput----")
@@ -78,11 +75,3 @@ if __name__ == '__main__':
     print(AvgFilledSlots)
     print(total_AVGSLT)
 
-
-
-    
-
-
-
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
