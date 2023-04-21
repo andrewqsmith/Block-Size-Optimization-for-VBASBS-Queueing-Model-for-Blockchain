@@ -461,7 +461,7 @@ Finally, if we divide by all of the coefficients then we have our ultimate const
   \frac{1}{2^{t-2}}\right)\right]^{-1} \label{nm_27}
 \end{multline}
 
-
+\iffalse
 \subsection{Optimization}\label{optimization}  
 
 Optimization in the old base model pertained to maximizing throughput
@@ -518,10 +518,37 @@ per second), we only need to estimate $j$ for the coming period to then broadcas
 window $T$ when the previous block is sent out to be validated. For practical purposes, the 
 ceiling of the solution to Eq.~\ref{opt_5} should be used to make sure that the time interval is always at least one
 second and that there are discrete second intervals to choose from.
+\fi
 
 \section{Results}
 
-TODO: Redo this later
+To show how this model reacts with different input parameters, code was written in Python
+to simulate our network. The code can be found in the GitHub repository used to collaborate
+on this project\footnote{https://github.com/andrewqsmith/Block-Size-Optimization-for-VBASBS-Queueing-Model-for-Blockchain/tree/main/GraphCode}.
+
+\begin{figure}[htbp]
+    \centerline{\includegraphics[width=\linewidth]{Figures/ThroughputVSNoOfTrnxConstOmega.png}}
+    \caption{Varying number of transactions seen through the network with constant block window time ($T$) and processing time ($\Omega$) to examine changes in throughput}
+    \label{TP_trans}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centerline{\includegraphics[width=\linewidth]{Figures/ThoughtputVSOmegaConstTrnx.png}}
+    \caption{Varying time taken to post and purge the block in the network with constant block window time ($T$) number of time slices ($t$) to examine changes in throughput}
+    \label{TP_omega}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centerline{\includegraphics[width=\linewidth]{Figures/AvgFilledSlotsVSOmegaConstTrnx.png}}
+    \caption{Varying number of transactions seen through the network with constant block window time ($T$) and processing time ($\Omega$) to examine changes in average filled slots}
+    \label{AFS_trans}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centerline{\includegraphics[width=\linewidth]{Figures/AvgFilledSlotsVSNoOfTrnxConstOmega.png}}
+    \caption{Varying time taken to post and purge the block in the network with constant block window time ($T$) and processing time ($\Omega$) to examine changes in average filled slots}
+    \label{AFS_omega}
+\end{figure}
 
 \section{Conclusion and Discussion}
 
