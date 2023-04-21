@@ -8,16 +8,18 @@ import matplotlib.pyplot as plt
 if __name__ == '__main__':
     throughputArr = []
     AvgFilledSlotsArr = []
+    transactionsArr = []
 
     # Varying Times
-    for each in range(1, 6):
+    for each in range(1, 13):
 
-        tau = each
-        omega = 1000
-        T = 2
-        transactions = T * tau
+        tau = 1/5
+        omega = 6
+        T = each
+        transactions = int(T / tau)
         P00 = 0
 
+        transactionsArr.append(transactions)
         A = np.zeros((transactions, transactions), dtype=np.longdouble)
         B = np.zeros((transactions, transactions), dtype=np.longdouble)
         Coefficient = np.zeros((transactions, transactions), dtype=np.longdouble)
@@ -65,7 +67,7 @@ if __name__ == '__main__':
         print(total_P)
         total_throughput = 0
         for i in range(transactions):
-            Throughput[i][transactions - i - 1] = (((T*tau) - (transactions - i - 1)) / omega) * P[i][transactions - i - 1]
+            Throughput[i][transactions - i - 1] = (((T/tau) - (transactions - i - 1)) / omega) * P[i][transactions - i - 1]
             total_throughput += Throughput[i][transactions - i - 1]
         print("-----Throughput----")
         print (Throughput)
@@ -88,38 +90,41 @@ if __name__ == '__main__':
     y = [1, 2, 3, 4, 5]
 
 
-    plt.plot(AvgFilledSlotsArr, y)
+    plt.plot(transactionsArr, AvgFilledSlotsArr)
 
     # Add labels and title
-    plt.xlabel('X-axis')
-    plt.ylabel('Y-axis')
-    plt.title('Average Filled Slots')
+    plt.xlabel('Number of Transactions')
+    plt.ylabel('Average Filled Slots')
+    plt.title('Average Filled Slots VS Number of Transactions')
 
     plt.show()
 
     y = [1, 2, 3, 4, 5]
 
 
-    plt.plot(throughputArr, y)
+    plt.plot(transactionsArr, throughputArr)
 
     # Add labels and title
-    plt.xlabel('X-axis')
-    plt.ylabel('Y-axis')
-    plt.title('Through Put')
+    plt.xlabel('Number of Transactions')
+    plt.ylabel('Throughput')
+    plt.title('Throughput VS Number of Transactions')
 
     plt.show()
 
     # Varying Omega
     throughputArr = []
     AvgFilledSlotsArr = []
+    omegaArr = []
 
-    for each in range(500, 5000, 500):
+    for each in range(3, 16):
 
-        tau = 4
+
+        tau = 1/5
         omega = each
-        T = 2
-        transactions = T * tau
+        T = 6
+        transactions = int(T / tau)
         P00 = 0
+        omegaArr.append(omega)
 
         A = np.zeros((transactions, transactions), dtype=np.longdouble)
         B = np.zeros((transactions, transactions), dtype=np.longdouble)
@@ -168,7 +173,7 @@ if __name__ == '__main__':
         print(total_P)
         total_throughput = 0
         for i in range(transactions):
-            Throughput[i][transactions - i - 1] = (((T*tau) - (transactions - i - 1)) / omega) * P[i][transactions - i - 1]
+            Throughput[i][transactions - i - 1] = (((T/tau) - (transactions - i - 1)) / omega) * P[i][transactions - i - 1]
             total_throughput += Throughput[i][transactions - i - 1]
         print("-----Throughput----")
         print (Throughput)
@@ -190,24 +195,24 @@ if __name__ == '__main__':
     y = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 
-    plt.plot(AvgFilledSlotsArr, y)
+    plt.plot(omegaArr, AvgFilledSlotsArr)
 
     # Add labels and title
-    plt.xlabel('X-axis')
-    plt.ylabel('Y-axis')
-    plt.title('Average Filled Slots')
+    plt.xlabel('Omega')
+    plt.ylabel('Avg. Filled Slots')
+    plt.title('Average Filled Slots VS Omega')
 
     plt.show()
 
     y = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 
-    plt.plot(throughputArr, y)
+    plt.plot(omegaArr, throughputArr)
 
     # Add labels and title
-    plt.xlabel('X-axis')
-    plt.ylabel('Y-axis')
-    plt.title('Through Put')
+    plt.xlabel('Omega')
+    plt.ylabel('Throughput')
+    plt.title('Throughput VS Omega')
 
     plt.show()
 
