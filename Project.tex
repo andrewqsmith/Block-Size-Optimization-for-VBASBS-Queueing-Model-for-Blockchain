@@ -455,10 +455,10 @@ If we factor out $P_{0,0}$ we get:
 Finally, if we divide by all of the coefficients then we have our ultimate constraint in Eq.~\ref{nm_27}:
 
 \begin{multline}
-  P_{0,0} = \left[1 +  \sum_{i = 1}^{t-1}{\frac{1}{b_{i,0}}} + \sum_{j = 1}^{t-1}{\frac{1}{b_{0,j}}} + \right.
-  \left.\sum_{i=1}^{t-j}{\sum_{j=1}^{t-1}{\frac{a_{i,j}}{b_{i,j}}}} + \right.\\
-  \left.\frac{\tau}{\Omega}\left(\sum_{j=1}^{t-1}{\left[\frac{a_{t-j-1,1}}{b_{t-j-1,1}} + \frac{a_{t-j,j-1}}{b_{t-j,j-1}}\right]} + \right.\right.
-  \left.\left.\frac{1}{2^{t-2}}\right)\right]^{-1} \label{nm_26}
+  P_{0,0} = \left[1 +  \sum_{i = 1}^{t-1}{\frac{1}{b_{i,0}}} + \sum_{j = 1}^{t-1}{\frac{1}{b_{0,j}}} + 
+  \sum_{i=1}^{t-j}{\sum_{j=1}^{t-1}{\frac{a_{i,j}}{b_{i,j}}}} + \right.\\
+  \left.\frac{\tau}{\Omega}\left(\sum_{j=1}^{t-1}{\left[\frac{a_{t-j-1,1}}{b_{t-j-1,1}} + \frac{a_{t-j,j-1}}{b_{t-j,j-1}}\right]} + 
+  \frac{1}{2^{t-2}}\right)\right]^{-1} \label{nm_27}
 \end{multline}
 
 
