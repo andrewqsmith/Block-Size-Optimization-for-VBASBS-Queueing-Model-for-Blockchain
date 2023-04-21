@@ -10,7 +10,7 @@ if __name__ == '__main__':
     AvgFilledSlotsArr = []
 
     # Varying Times
-    for each in range(1, 5):
+    for each in range(1, 6):
 
         tau = each
         omega = 1000
@@ -187,7 +187,7 @@ if __name__ == '__main__':
 
         
 
-    y = [1, 2, 3, 4, 5]
+    y = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 
     plt.plot(AvgFilledSlotsArr, y)
@@ -199,7 +199,7 @@ if __name__ == '__main__':
 
     plt.show()
 
-    y = [1, 2, 3, 4, 5]
+    y = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 
     plt.plot(throughputArr, y)
