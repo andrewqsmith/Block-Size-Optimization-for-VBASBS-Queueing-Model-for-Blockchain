@@ -422,16 +422,47 @@ that, our equations for each final state $P_{t-j,j}$ are as stated in Eq.~\ref{n
   \sum_{i=0}^{t-j}{\sum_{j=0}^{t}{P_{i,j}}} = 1.0\label{nm_23}
 \end{equation}
 
-\subsubsection{Remarks} $\\$
+This can be broken down into the constituent components, starting with the
+initial state. The edge cases before the final states are the second unique case
+since there coefficients can be calculated as $1/b_{i,j}$ where $b_i,j$ is given in 
+Eq.~\ref{nm_18}. The standard $P_{i,j}$ cases come next, followed by the final
+states $P_{t-j,j}$. These final states can be further be broken down into there 
+middle cases an the two edge cases when $i = 0$ or $j = 0$. 
 
-$\bullet$ Each $P_{i,j}$ depends on the previous $(i-1)$ column and its 
-preceding $(0 ... j)$ rows. This $P_{i,j}$ in turn, affects $P_{i+1,j}$ through
-$P_{i+1,t-i-1}$.
+\begin{multline}
+  P_{0,0} +  \sum_{i = 1}^{t-1}{P_{i,0}} + \sum_{j = 1}^{t-1}{P_{0,j}} + \sum_{i=1}^{t-j}{\sum_{j=1}^{t-1}{P_{i,j}}} \\
+  + \sum_{j=1}^{t-1}{P_{t-j,j}} + P_{t, 0} + P_{0, t} = 1.0 \label{nm_24}
+\end{multline}
 
-$\bullet$ The $i=0$ column has only $P_{0,0}$ (no arrivals and no time 
-elapsed.
+Now, all of these cases can be written in terms of $P_{0,0}$ in Eq.~\ref{nm_25} below:
 
-\subsection{Optimization}\label{optimization}
+\begin{multline}
+  P_{0,0} +  \sum_{i = 1}^{t-1}{\frac{1}{b_{i,0}}P_{0,0}} + \sum_{j = 1}^{t-1}{\frac{1}{b_{0,j}}P_{0,0}} + 
+  \sum_{i=1}^{t-j}{\sum_{j=1}^{t-1}{\frac{a_{i,j}}{b_{i,j}}P_{0,0}}} + \\
+  \sum_{j=1}^{t-1}{\frac{\tau}{\Omega}\left[\frac{a_{t-j-1,1}}{b_{t-j-1,1}} + \frac{a_{t-j,j-1}}{b_{t-j,j-1}}\right]P_{0,0}} + \\
+  \frac{2\tau}{\Omega}\frac{1}{2^{t-1}}P_{0,0} = 1.0 \label{nm_25}
+\end{multline}
+
+If we factor out $P_{0,0}$ we get:
+
+\begin{multline}
+  P_{0,0} \left[1 +  \sum_{i = 1}^{t-1}{\frac{1}{b_{i,0}}} + \sum_{j = 1}^{t-1}{\frac{1}{b_{0,j}}} + \right.
+  \left.\sum_{i=1}^{t-j}{\sum_{j=1}^{t-1}{\frac{a_{i,j}}{b_{i,j}}}} + \right.\\
+  \left.\sum_{j=1}^{t-1}{\frac{\tau}{\Omega}\left[\frac{a_{t-j-1,1}}{b_{t-j-1,1}} + \frac{a_{t-j,j-1}}{b_{t-j,j-1}}\right]} + \right.\\
+  \left.\frac{\tau}{\Omega}\frac{1}{2^{t-2}}\right] = 1.0 \label{nm_26}
+\end{multline}
+
+Finally, if we divide by all of the coefficients then we have our ultimate constraint in Eq.~\ref{nm_27}:
+
+\begin{multline}
+  P_{0,0} = \left[1 +  \sum_{i = 1}^{t-1}{\frac{1}{b_{i,0}}} + \sum_{j = 1}^{t-1}{\frac{1}{b_{0,j}}} + \right.
+  \left.\sum_{i=1}^{t-j}{\sum_{j=1}^{t-1}{\frac{a_{i,j}}{b_{i,j}}}} + \right.\\
+  \left.\frac{\tau}{\Omega}\left(\sum_{j=1}^{t-1}{\left[\frac{a_{t-j-1,1}}{b_{t-j-1,1}} + \frac{a_{t-j,j-1}}{b_{t-j,j-1}}\right]} + \right.\right.
+  \left.\left.\frac{1}{2^{t-2}}\right)\right]^{-1} \label{nm_26}
+\end{multline}
+
+
+\subsection{Optimization}\label{optimization}  
 
 Optimization in the old base model pertained to maximizing throughput
 while minimizing waiting time by adjusting the size of the next block, $n$,
@@ -439,7 +470,7 @@ based on the expected rate of transaction arrivals, $\lambda$.
 
 Since we have now flipped the model on its head and time is fixed for the next
 block sent to validators and the block size already varies, we set out to see if
-we can loosen this constraint and set an optimal $T$ based on how fast 
+we can loosen this constraints and set an optimal $T$ based on how fast 
 transactions are reaching the network. In our new model, this is entirely based
 on $j$ since that variable represents time slices, $\tau$, with no transactions in them,
 or as we have also stated, each $j$ can be thought of as a stall cycle waiting for
