@@ -18,10 +18,10 @@
 \title{Adapting VBASBS Queueing Model for Proof-of-Stake Consensus Algorithm}
 
 \author{
-  \textbf{Kyle Kentner$^*$, Nathan Crosby$^*$, Andrew Smith$^*$, Sush Chittibabu$^*$, and Abdulla Karjikar$^*$}\\
+  \textbf{Kyle Kentner$^*$, Nathan Crosby$^*$, Andrew Smith$^*$, Abdulla Karjikar$^*$, and Sush Chittibabu$^*$}\\
   Oklahoma State University - Stillwater, OK \\
   kyle.kentner@okstate.edu, ncrosby@okstate.edu, scu@okstate.edu, \\
-  sushmitha.chittibabu@okstate.edu, abdulla.karjikar@okstate.edu}
+  abdulla.karjikar@okstate.edu, sushmitha.chittibabu@okstate.edu}
 
 \maketitle
 
@@ -32,17 +32,17 @@
 Our main goal with this work is to establish a theoretical model that can simulate
 more accurately how blockchain transactions are grouped, validated, processed,
 and purged from a network based on a proof-of-stake consensus algorithm. With 
-the switch from the proof-of-work consensus algorithm to the newer proof-of-stake with 
-cryptocurrencies, most notably Ethereum, there is a need to update the theoretical 
-models that are used to define efficiency metrics. Further, we took it upon ourselves 
-to move beyond that and quantify the optimal time window to decrease waiting time
-for the average owner of each transaction, while not significantly deteriorating throughput
-for the network as a whole.
-
+the switch from the proof-of-work consensus algorithm to the newer proof-of-stake
+consensus algorithm in cryptocurrencies, most notably Ethereum, there is a need to 
+update the theoretical models that are used to define efficiency metrics. We move 
+here from a model in the proof-of-work framework that is a fixed block size and a 
+varying rate of transaction arrivals, to one in the proof-of-stake framework that
+has a fixed window of time in which to fill up a transaction block, but at the end of 
+the block window of time, the number of transactions is variable. 
 \end{abstract}
 
 \begin{IEEEkeywords}
-Blockchain, Optimization, Queueing
+Blockchain, Proof-of-Stake, Queueing
 \end{IEEEkeywords}
 
 \section{Introduction}\label{Intro}
@@ -64,20 +64,11 @@ computations while decreasing the barrier to entry hence providing reduced centr
 risk with the potential of more nodes securing the network. Where under the proof-of-work
 consensus algorithm, the timing of blocks was determined by the mining difficulty, the 
 new approach, proof-of-stake, the timing is fixed. Time in the Ethereum proof-of-stake 
-consensus algorithm is divided into slots of 12 seconds and epochs of 32 slots.
-
-While the proof-of-stake greatly improved the efficiency of transactions, there remains 
-room for improvements in the validation of transactions. In this paper, we propose an 
-algorithm to decrease waiting time while maintaining a high level of throughput. To begin 
-the optimization process, we must first choose a performance model that analytically 
-describes the relationship between the number of transactions, the fixed time for those 
-transactions to be processed, and the total number of transactions that are processed 
-(throughput). Once a representative performance model has been chosen, an optimal
-time window can be selected that balances out the throughput. 
+consensus algorithm is divided into 12 second increments in which a block is created.
 
 Our paper is organized as follows. In section two we conduct a brief literature review and 
 then focus on the performance model that will underly our own work. Section three is 
-dedicated to the methodology we used to optimize the block size with details of our 
+dedicated to the methodology we used to step through the new proof-of-stake network with details of our 
 approach theorized via mathematical models. In section four, we discuss the results recorded 
 from our early attempts at simulating our proposed model. Then we conclude in section five 
 with remarks and discuss potential future areas to continue expanding upon the model. 
@@ -92,7 +83,7 @@ the throughput, or number of transactions processed by a blockchain system in a 
 time, are key indicators of its performance. Mechkaroska\cite{2018_TELFOR_Mechkaroska} explores
 some of the methods tried up to that point. They include increasing the block size to increase the 
 number of transactions being processed, which is increasing throughput, and a technique called 
-"sharding" that is similar to parallel processing of transactions. This showed up in an alt-coin named 
+``sharding" that is similar to parallel processing of transactions. This showed up in an alt-coin named 
 Zilliqa\cite{2017_Zilliqa_Zilliqa} which is mentioned in the paper. While sharding is on the docket of 
 potential changes to the Ethereum network, it has not been given the green light yet, and might not
 be necessary considering the changes made to the consensus algorithm, discussed later.
@@ -115,7 +106,9 @@ shift to a proof-of-stake consensus algorithm facilitates a precipitous drop in 
 as seen in Platt\cite{2021_IEEEQRSC_Platt}. The large pool of staked validators means that the 
 requirement for a validator can switch from access to raw compute power to capital. As stated in 
 Sec.~\ref{Intro} this change for Ethereum happened in 2022, and therefore a new theoretical model
-must be considered to take into account the eccentricities of this new consensus algorithm. 
+must be considered to take into account the eccentricities of this new consensus algorithm. This 
+new consensus methodology shifts gears in the race to increase throughput, and that is why we 
+have dedicate this work to exploring the ramifications of that algorithm in a more theoretical context.
 
 \section{Methodology}
 
@@ -173,7 +166,8 @@ block window of time with $j$ empty time slices.
 
 $\tau$: The minimum time increment that can pass between the 
 transaction arrivals. If the theoretical maximum for a given application is 1,000 transactions 
-per second then $\tau = \frac{1}{1000}$
+per second then $\tau = \frac{1}{1000}$. Our examples in Sec.~\ref{results} use a much smaller 
+theoretical maximum level of transactions to facilitate ease of computation. 
 
 $T$: The total time that will pass between each block creation and is initially static.
 
@@ -232,7 +226,7 @@ It is with this addition, along with chopping a fixed amount of time to minimum 
 increments, $\tau$, that we can approximate the proof of stake workflow in 
 blockchain networks, like Ethereum. 
 
-\subsubsection{$P_{i,j}$} $\\$
+\subsubsection{$P_{i,j}$}
 
 Now that the initial state has been defined, we need to examine how the network
 will handle the intermediate time steps before we reach the end of the block window
@@ -270,8 +264,8 @@ Similarly, we can expand from $P_{0,0}$ to $P_{0,1}$ with Eqs.~\ref{nm_5} \&~\re
   P_{0,1} = \frac{1}{2}P_{0,0}\label{nm_6}
 \end{equation}
 
-This makes intuitive since, given the binary nature of the observation that after 
-one time step and the random nature of $j$ that there is a 50\% chance of landing
+This makes intuitive sense, given the binary nature of the observation and the random
+nature of $j$ that after one time step there is a 50\% chance of landing
 in either state $P_{1,0}$ or $P_{0,1}$. We can now move on to the next layer, which 
 would then be the states $P_{2,0}$, $P_{0,2}$, or $P_{1,1}$. Lets first examine the 
 edge cases. $\\$
@@ -375,7 +369,7 @@ Now, the generalized formula for $P_{i,j}$ can be given in Eq.~\ref{nm_20}:
   P_{i,j} = \frac{a_{i,j}}{b_{i,j}}P_{0,0}, \text{  for } j < t \text{ \& } i < t-j\label{nm_20}
 \end{equation}
 
-\subsubsection{$P_{t-j,j}$} $\\$
+\subsubsection{$P_{t-j,j}$}
 
 We have now defined the initial state, $P_{0,0}$ and the intermediate states, $P_{i,j}$ up 
 until we get to the end of the block time window ($T$). We must now define the final states
@@ -404,7 +398,7 @@ other is when $j$ is one of the edge cases. The main caveat is that an
 edge case will have a numerator equal to $1$, where the regular rules
 from Eq.~\ref{nm_19} apply to the non-edge cases. Another note, since 
 all final states transition to the initial state, $P_{0,0}$, then we do not 
-double the numerator again and $b_{t-j,j} = 2^{t-1}$ for all cases. Given 
+double the denominator again and $b_{t-j,j} = 2^{t-1}$ for all cases. Given 
 that, our equations for each final state $P_{t-j,j}$ are as stated in Eq.~\ref{nm_22}.
 
 \begin{equation}
@@ -416,7 +410,7 @@ that, our equations for each final state $P_{t-j,j}$ are as stated in Eq.~\ref{n
     \label{nm_22}
 \end{equation}
 
-\subsubsection{Constraint: Markovian Queueing Assumption}
+\subsubsection{Constraint - Markovian Queueing Assumption}
 
 \begin{equation}
   \sum_{i=0}^{t-j}{\sum_{j=0}^{t}{P_{i,j}}} = 1.0\label{nm_23}
@@ -424,10 +418,10 @@ that, our equations for each final state $P_{t-j,j}$ are as stated in Eq.~\ref{n
 
 This can be broken down into the constituent components, starting with the
 initial state. The edge cases before the final states are the second unique case
-since there coefficients can be calculated as $1/b_{i,j}$ where $b_i,j$ is given in 
+since their coefficients can be calculated as $1/b_{i,j}$ where $b_{i,j}$ is given in 
 Eq.~\ref{nm_18}. The standard $P_{i,j}$ cases come next, followed by the final
-states $P_{t-j,j}$. These final states can be further be broken down into there 
-middle cases an the two edge cases when $i = 0$ or $j = 0$. 
+states $P_{t-j,j}$. These final states can be further be broken down into the 
+middle cases and the two edge cases when $i = 0$ or $j = 0$. 
 
 \begin{multline}
   P_{0,0} +  \sum_{i = 1}^{t-1}{P_{i,0}} + \sum_{j = 1}^{t-1}{P_{0,j}} + \sum_{i=1}^{t-j}{\sum_{j=1}^{t-1}{P_{i,j}}} \\
@@ -520,50 +514,55 @@ ceiling of the solution to Eq.~\ref{opt_5} should be used to make sure that the 
 second and that there are discrete second intervals to choose from.
 \fi
 
-\section{Results}
-
-To show how this model reacts with different input parameters, code was written in Python
-to simulate our network. The code can be found in the GitHub repository used to collaborate
-on this project\footnote{https://github.com/andrewqsmith/Block-Size-Optimization-for-VBASBS-Queueing-Model-for-Blockchain/tree/main/GraphCode}.
+\section{Results}\label{results}
 
 \begin{figure}[htbp]
     \centerline{\includegraphics[width=\linewidth]{Figures/ThroughputVSNoOfTrnxConstOmega.png}}
-    \caption{Varying number of transactions seen through the network with constant block window time ($T$) and processing time ($\Omega$) to examine changes in throughput}
+    \caption{Varying number of transaction time slices ($t$) in the network with constant block window time ($T$) and processing time ($\Omega$) to examine changes in throughput}
     \label{TP_trans}
 \end{figure}
 
 \begin{figure}[htbp]
     \centerline{\includegraphics[width=\linewidth]{Figures/ThoughtputVSOmegaConstTrnx.png}}
-    \caption{Varying time taken to post and purge the block in the network with constant block window time ($T$) number of time slices ($t$) to examine changes in throughput}
+    \caption{Varying time taken to post and purge the block in the network with constant block window time ($T$) and number of time slices ($t$) to examine changes in throughput}
     \label{TP_omega}
 \end{figure}
 
+To show how this model reacts with different input parameters, code was written in Python
+to simulate our network. The code can be found in the GitHub repository used to collaborate
+on this project\footnote{https://github.com/andrewqsmith/Block-Size-Optimization-for-VBASBS-\\
+Queueing-Model-for-Blockchain/tree/main/GraphCode}. As can be seen from Fig.~\ref{TP_trans}
+as the number of transactions goes up with constant block window time ($T$) the level of throughput
+decreases. The same is true with Fig.~\ref{TP_omega} as $\Omega$ increases. This is intuitive as 
+the longer it takes to process the transactions the lower throughput will be.
+
+Average filled slots is a metric that is similar to customers in queue in the base paper 
+\cite{2020_ACM_Seol}. In Fig.~\ref{AFS_omega} it can be seen that average filled slots 
+exhibits a similar behavior to throughput when $\Omega$ is varied, but the relationship 
+between average filled slots and number of transaction slots ($t$) is linear. This again is 
+intuitive given the static nature of the probability of $j$ in our given model. 
+
 \begin{figure}[htbp]
     \centerline{\includegraphics[width=\linewidth]{Figures/AvgFilledSlotsVSOmegaConstTrnx.png}}
-    \caption{Varying number of transactions seen through the network with constant block window time ($T$) and processing time ($\Omega$) to examine changes in average filled slots}
-    \label{AFS_trans}
+    \caption{Varying number of transaction time slices ($t$) in the network with constant block window time ($T$) and processing time ($\Omega$) to examine changes in average filled slots}
+    \label{AFS_omega}
 \end{figure}
 
 \begin{figure}[htbp]
     \centerline{\includegraphics[width=\linewidth]{Figures/AvgFilledSlotsVSNoOfTrnxConstOmega.png}}
-    \caption{Varying time taken to post and purge the block in the network with constant block window time ($T$) and processing time ($\Omega$) to examine changes in average filled slots}
-    \label{AFS_omega}
+    \caption{Varying time taken to post and purge the block in the network ($\Omega$) with constant block window time ($T$) and number of time slices ($t$)  to examine changes in average filled slots}
+    \label{AFS_trans}
 \end{figure}
 
 \section{Conclusion and Discussion}
 
-The conclusion this team has derived through the suggested mathematical models is that 
-the blockchain transactions, in regards to proof-of stack, can be optimized in the model 
-described in Seol\cite{2020_ACM_Seol}. This is achievable, as suggested in Sec. III, through 
-time variable transactions into the queuing model. In this proposed solution, a significant 
-reduction is noticeable in transaction waiting time in the queue while maintaining acceptable 
-levels of throughput.
+In this work we have demonstrated a new framework to theoretically describe proof-of-stake
+blockchain networks, and have created Python code to simulate efficiency metrics when 
+certain independent variables are varied. 
 
-Additional research recommended would be to expand this methodology into a future 
-Ethereum branch where sharding has been implemented. We believe that this approach, 
-along with asynchronous composability inherited from the necessity for the splltting of the 
-Ethereum infrastructure, would facilitate optimization on the various transactional validation 
-required on such a scale.
+This work could be used in the future to optimize the block window of time based on the 
+expected empty transaction time slices ($j$) to be seen in the next block window of time 
+based off of past history and the cyclical nature of transaction activity. 
 
 \bibliographystyle{IEEEtrans}
 \bibliography{Crosby}
