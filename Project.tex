@@ -231,7 +231,7 @@ blockchain networks, like Ethereum.
 Now that the initial state has been defined, we need to examine how the network
 will handle the intermediate time steps before we reach the end of the block window
 of time ($T$). At each time step, we only have two options, increment $i$ or increment
-$j$ based on seeing a transaction or not. Let's first examine the case of $P_{1,0}$ or 
+$j$ based on seeing a transaction or not. Let us first examine the case of $P_{1,0}$ or 
 seeing a transaction in the first time slot. $\\$
 
 \begin{figure}[htbp]
@@ -267,7 +267,7 @@ Similarly, we can expand from $P_{0,0}$ to $P_{0,1}$ with Eqs.~\ref{nm_5} \&~\re
 This makes intuitive sense, given the binary nature of the observation and the random
 nature of $j$ that after one time step there is a 50\% chance of landing
 in either state $P_{1,0}$ or $P_{0,1}$. We can now move on to the next layer, which 
-would then be the states $P_{2,0}$, $P_{0,2}$, or $P_{1,1}$. Lets first examine the 
+would then be the states $P_{2,0}$, $P_{0,2}$, or $P_{1,1}$. Let us first examine the 
 edge cases. $\\$
 
 Incoming: $\tau P_{1,0}$
@@ -404,8 +404,8 @@ that, our equations for each final state $P_{t-j,j}$ are as stated in Eq.~\ref{n
 \begin{equation}
   P_{t-j,j} =
     \begin{cases}
-      \frac{a_{t-j-1,j} + a_{t-j,j-1}}{2^{t-1}}P_{0,0},                            & 0 < j < t \\
-      \frac{1}{2^{t-1}}P_{0,0},  & j = 0 \text{ } |\text{ } j = t
+      \frac{\tau}{\Omega}(\frac{a_{t-j-1,j}}{2^{t-1}} + {a_{t-j,j-1}}{2^{t-1}})P_{0,0},                            & 0 < j < t \\
+      \frac{\tau}{\Omega}(\frac{1}{2^{t-1}}P_{0,0},  & j = 0 \text{ } |\text{ } j = t)
     \end{cases}
     \label{nm_22}
 \end{equation}
@@ -491,7 +491,7 @@ The waiting time for each customer in the queue is now simply $T$
 
 To find the optimal level of $T$ we then need to take the partial derivative with respect to $T$ that will
 be in terms of $j$ and then set it equal to zero and solve for $T$. For simplicity in Eq.~\ref{opt_3}, 
-let's call the ratio of Throughput to Waiting Time $M$, and we can calculate the derivative as follows.
+let us call the ratio of Throughput to Waiting Time $M$, and we can calculate the derivative as follows.
 
 \begin{equation}
   \frac{\delta M}{\delta T} = -\frac{1}{\tau T^2}+\frac{2j}{T^3}=0\label{opt_3}
