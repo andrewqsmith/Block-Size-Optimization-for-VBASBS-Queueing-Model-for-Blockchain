@@ -64,7 +64,7 @@ computations while decreasing the barrier to entry hence providing reduced centr
 risk with the potential of more nodes securing the network. Where under the proof-of-work
 consensus algorithm, the timing of blocks was determined by the mining difficulty, the 
 new approach, proof-of-stake, the timing is fixed. Time in the Ethereum proof-of-stake 
-consensus algorithm is divided into 12 second increments in which a block is created.
+consensus algorithm is divided into twelve second increments in which a block is created.
 
 Our paper is organized as follows. In section two we conduct a brief literature review and 
 then focus on the performance model that will underly our own work. Section three is 
@@ -404,8 +404,8 @@ that, our equations for each final state $P_{t-j,j}$ are as stated in Eq.~\ref{n
 \begin{equation}
   P_{t-j,j} =
     \begin{cases}
-      \frac{\tau}{\Omega}(\frac{a_{t-j-1,j}}{2^{t-1}} + {a_{t-j,j-1}}{2^{t-1}})P_{0,0},                            & 0 < j < t \\
-      \frac{\tau}{\Omega}(\frac{1}{2^{t-1}}P_{0,0},  & j = 0 \text{ } |\text{ } j = t)
+      \frac{\tau}{\Omega}\left(\frac{a_{t-j-1,j}}{2^{t-1}} + \frac{a_{t-j,j-1}}{2^{t-1}}\right)P_{0,0}, & 0 < j < t \\
+      \frac{\tau}{\Omega}\left(\frac{1}{2^{t-1}}\right)P_{0,0},  & j = 0 \text{ } |\text{ } j = t
     \end{cases}
     \label{nm_22}
 \end{equation}
