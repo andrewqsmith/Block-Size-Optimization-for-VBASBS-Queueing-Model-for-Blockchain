@@ -108,7 +108,7 @@ requirement for a validator can switch from access to raw compute power to capit
 Sec.~\ref{Intro} this change for Ethereum happened in 2022, and therefore a new theoretical model
 must be considered to take into account the eccentricities of this new consensus algorithm. This 
 new consensus methodology shifts gears in the race to increase throughput, and that is why we 
-have dedicate this work to exploring the ramifications of that algorithm in a more theoretical context.
+have dedicated this work to exploring the ramifications of that algorithm in a more theoretical context.
 
 \section{Methodology}
 
@@ -119,7 +119,7 @@ Our algorithm will expand on the performance model proposed by Seol, Kancharla, 
  The arrival rate is assumed to vary with the size of the incoming transaction and the rate is 
  denoted by the symbol $\lambda$.
 
-The variable $\mu$ is defined to be the processing time of a block to be posted and purged as noted 
+The variable $\mu$ is defined to be the processing rate for a block to be posted and purged as noted 
 in Seol\cite{2020_ACM_Seol}, and is assumed to be fairly static as stated in the model. 
 The variable n is defined to be the total number of slots in the block. P$_i$ denotes the states with 
 P$_n$ denoting the maximum state before the block is processed. 
@@ -282,13 +282,13 @@ Outgoing: $2 \tau P_{2,0}$
   P_{2,0} = \frac{1}{2}P_{1,0}\label{nm_7}
 \end{equation}
 
-And now subbing back into $P_{1,0}$ the result from Eq.~\ref{nm_4} we get:
+And now substituting back into $P_{1,0}$ the result from Eq.~\ref{nm_4} we get:
 
 \begin{equation}
   P_{2,0} = \frac{1}{2}(\frac{1}{2}P_{0,0})=\frac{1}{4}P_{0,0}\label{nm_8}
 \end{equation}
 
-And similarly for $P_{0,2}$ we get the same result. Now, lets move on to the more
+And similarly for $P_{0,2}$ we get the same result. Now, let us move on to the more
 interesting result from $P_{1,1}$. $\\$
 
 Incoming: $\tau P_{1,0}$, $\tau P_{0,1}$
